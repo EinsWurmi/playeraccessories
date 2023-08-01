@@ -9,8 +9,6 @@
 </p>
 
 * [Basic Overview](#basic-overview)
-  * [Supported Versions](#supported-versions)
-    * [LabyMod 4](#labymod-4)
 * [Installation](#installation)
   * [Release](#release)
   * [Development](#development)
@@ -21,20 +19,6 @@
 
 PlayerAccessories is a LabyMod addon written to add multiple functions to some Minecraft servers
 and the minecraft LabyMod player - some nice to have features and utilities!
-
-### Supported Versions
-
-#### LabyMod 4
-
-<p align="center">
-  <code>The addon is currently in development</code>
-  <br> <br>
-  <code>
-    1.8.9 - 1.12.2 - 1.16.5 - 1.17.1 <br>
-    1.18.2 - 1.19.1 - 1.19.2 - 1.19.3 <br>
-    1.20.1
-  </code>
-</p>
 
 ## Installation
 
