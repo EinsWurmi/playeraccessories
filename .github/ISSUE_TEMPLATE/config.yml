@@ -1,0 +1,13 @@
+blank_issue_enabled: false
+
+contact_links:
+  - name: Ask a question
+    url: https://github.com/epycsolutions-addons/player-accessories/discussions
+    about: Ask questions and discuss topics with other community members
+
+  - name: Documentation request
+    about: Request for documentation to be added/altered
+
+  - name: Chat woth other community members
+    url: https://discord.gg/hWhcQ5T
+    about: The official EpycSolutions Discord community

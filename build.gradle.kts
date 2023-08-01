@@ -4,18 +4,18 @@ plugins {
     id("net.labymod.gradle.addon")
 }
 
-group = "org.example"
-version = "1.0.0"
+group = "eu.epycsolutions.labyaddon.playeraccessories"
+version = "0.1.0"
 
 java.toolchain.languageVersion.set(JavaLanguageVersion.of(17))
 
 labyMod {
-    defaultPackageName = "org.example" //change this to your main package name (used by all modules)
+    defaultPackageName = "eu.epycsolutions.labyaddon.playeraccessories" //change this to your main package name (used by all modules)
     addonInfo {
-        namespace = "example"
-        displayName = "ExampleAddon"
-        author = "Example Author"
-        description = "Example Description"
+        namespace = "player-accessories"
+        displayName = "PlayerAccessories"
+        author = "Epyc Solutions"
+        description = "Set custom names, add Tags and Icons for user, set a custom status for yourself, add waypoints and much more!"
         minecraftVersion = "*"
         version = System.getenv().getOrDefault("VERSION", "0.0.1")
     }
