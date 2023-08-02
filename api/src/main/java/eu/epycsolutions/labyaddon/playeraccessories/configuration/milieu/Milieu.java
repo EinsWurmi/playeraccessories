@@ -12,7 +12,9 @@ import net.labymod.api.service.Registry;
 import net.labymod.api.util.CharSequences;
 import net.labymod.api.util.CollectionHelper;
 import net.labymod.api.util.KeyValue;
+import net.labymod.api.util.io.Filter;
 import org.jetbrains.annotations.Nullable;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -86,6 +88,19 @@ public interface Milieu extends Identifiable, Registry<Milieu> {
   }
 
   default boolean isHoldable() { return true; }
+
+  default List<Milieu> collect(Filter<Milieu> filter) {
+    List<Milieu> milieus = new ArrayList<>();
+
+    for(KeyValue<Milieu> element : getElements()) {
+      Milieu milieu = element.getValue();
+      if(filter.matches(milieu)) milieus.add(milieu);
+
+      milieus.addAll(milieu.collect(filter));
+    }
+
+    return milieus;
+  }
 
   @Nullable
   default MilieuHandler handler() { return null; }
