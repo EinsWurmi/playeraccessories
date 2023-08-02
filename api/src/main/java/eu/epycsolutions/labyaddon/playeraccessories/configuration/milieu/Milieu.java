@@ -2,7 +2,7 @@ package eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu;
 
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.accessors.MilieuAccessor;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.MilieuElement;
-import eu.epycsolutions.labyaddon.playeraccessories.events.MilieuInitializeEvent;
+import eu.epycsolutions.labyaddon.playeraccessories.events.milieu.MilieuInitializeEvent;
 import eu.epycsolutions.labyaddon.playeraccessories.gui.screen.activity.playeraccessories.childs.MilieuContentActivity;
 import net.labymod.api.Laby;
 import net.labymod.api.client.component.Component;

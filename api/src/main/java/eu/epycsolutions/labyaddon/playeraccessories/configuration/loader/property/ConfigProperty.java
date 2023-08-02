@@ -2,8 +2,8 @@ package eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.proper
 
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.MilieuHandler;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.MilieuElement;
-import eu.epycsolutions.labyaddon.playeraccessories.events.MilieuResetEvent;
-import eu.epycsolutions.labyaddon.playeraccessories.events.MilieuUpdateEvent;
+import eu.epycsolutions.labyaddon.playeraccessories.events.milieu.MilieuResetEvent;
+import eu.epycsolutions.labyaddon.playeraccessories.events.milieu.MilieuUpdateEvent;
 import net.labymod.api.Laby;
 import net.labymod.api.event.Phase;
 import net.labymod.api.property.Property;

@@ -4,7 +4,7 @@ import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.Config;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.property.ConfigProperty;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.accessors.MilieuAccessor;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.MilieuElement;
-import eu.epycsolutions.labyaddon.playeraccessories.events.MilieuUpdateEvent;
+import eu.epycsolutions.labyaddon.playeraccessories.events.milieu.MilieuUpdateEvent;
 import net.labymod.api.Laby;
 import net.labymod.api.event.Phase;
 import net.labymod.api.util.reflection.Reflection;

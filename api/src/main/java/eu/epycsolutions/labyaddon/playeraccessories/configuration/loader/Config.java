@@ -33,7 +33,7 @@ import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.M
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.RootMilieuRegistry;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.list.ListMilieu;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.widget.WidgetRegistry;
-import eu.epycsolutions.labyaddon.playeraccessories.events.MilieuCreateEvent;
+import eu.epycsolutions.labyaddon.playeraccessories.events.milieu.MilieuCreateEvent;
 import net.labymod.api.Laby;
 import net.labymod.api.LabyAPI;
 import net.labymod.api.client.gui.icon.Icon;
@@ -47,7 +47,6 @@ import net.labymod.api.util.version.serial.VersionCompatibilityDeserializer;
 import net.labymod.api.util.version.serial.VersionDeserializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import javax.swing.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
