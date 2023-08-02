@@ -1,4 +1,4 @@
-package eu.epycsolutions.labyaddon.playeraccessories.gui.screen.widgets;
+package eu.epycsolutions.labyaddon.playeraccessories.gui.screen.widget.widgets.activity.milieus;
 
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.Milieu;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.MilieuInfo;

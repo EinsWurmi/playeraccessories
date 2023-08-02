@@ -1,4 +1,4 @@
-package eu.epycsolutions.labyaddon.playeraccessories.gui.screen.widgets.input;
+package eu.epycsolutions.labyaddon.playeraccessories.gui.screen.widget.widgets.input;
 
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.Milieu;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.accessors.MilieuAccessor;

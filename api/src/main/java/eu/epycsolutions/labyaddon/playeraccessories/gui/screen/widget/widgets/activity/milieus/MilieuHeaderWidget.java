@@ -1,4 +1,4 @@
-package eu.epycsolutions.labyaddon.playeraccessories.gui.screen.widgets;
+package eu.epycsolutions.labyaddon.playeraccessories.gui.screen.widget.widgets.activity.milieus;
 
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gui.screen.Parent;
