@@ -174,7 +174,7 @@ public class Config implements ConfigAccessor {
     if(listenerMethods.isEmpty()) return milieus;
 
     for(Milieu milieu : milieus) {
-      if(!milieu.isElement()) continue;;
+      if(!milieu.isElement()) continue;
 
       for(MilieuListenerMethod listener : listenerMethods) {
         if(!listener.target.equals(milieu.getId())) continue;
