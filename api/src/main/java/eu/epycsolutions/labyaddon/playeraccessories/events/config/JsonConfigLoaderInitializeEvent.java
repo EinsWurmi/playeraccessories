@@ -1,4 +1,4 @@
-package eu.epycsolutions.labyaddon.playeraccessories.events;
+package eu.epycsolutions.labyaddon.playeraccessories.events.config;
 
 import com.google.gson.GsonBuilder;
 import net.labymod.api.event.Event;
