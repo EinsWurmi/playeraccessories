@@ -184,9 +184,9 @@ public class MilieuContentActivity extends Activity {
     milieuList.addId("list");
 
     if(
-        this.headerType == HeaderType.FIXED ||
+        this.headerType == HeaderType.SCROLL ||
         (
-            this.headerType == HeaderType.FIXED_IN_CHILDREN &&
+            this.headerType == HeaderType.SCROLL_IN_CHILDREN &&
             this.currentMilieuHolder.hasParent() &&
             (this.currentMilieuHolder.parent().isHoldable() || this.currentMilieuHolder.parent() instanceof ListMilieu)
         )
