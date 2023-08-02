@@ -1,6 +1,7 @@
 package eu.epycsolutions.labyaddon.playeraccessories.gui.screen.activity.playeraccessories.childs;
 
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.Milieu;
+import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.MilieuGroup;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.MilieuHandler;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.MilieuElement;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.MilieuHeader;
@@ -24,6 +25,7 @@ import net.labymod.api.client.gui.screen.widget.action.ListSession;
 import net.labymod.api.client.gui.screen.widget.widgets.ComponentWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.input.ButtonWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.FlexibleContentWidget;
+import net.labymod.api.client.gui.screen.widget.widgets.layout.ScrollWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.list.HorizontalListWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.layout.list.VerticalListWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.renderer.IconWidget;
@@ -231,6 +233,16 @@ public class MilieuContentActivity extends Activity {
     }
 
     labyAPI.eventBus().fire(new MilieuWidgetInitializeEvent((ParentScreen) getParent(), this.currentMilieuHolder, list));
+
+    for(Widget milieuWidget : list) milieuList.addChild(milieuWidget);
+
+    ScrollWidget scrollWidget = new ScrollWidget(milieuList, session);
+    scrollWidget.addId("scroll");
+
+    if(this.headerType == HeaderType.FIXED) scrollWidget.addId("header-spacing");
+    container.addFlexibleContent(scrollWidget);
+
+    this.document().addChild(container);
   }
 
   @Override
