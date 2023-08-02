@@ -8,8 +8,8 @@ import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.M
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.list.ListMilieu;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.utils.MilieuActivitySupplier;
 import eu.epycsolutions.labyaddon.playeraccessories.events.widget.MilieuWidgetInitializeEvent;
-import eu.epycsolutions.labyaddon.playeraccessories.gui.screen.widgets.MilieuHeaderWidget;
-import eu.epycsolutions.labyaddon.playeraccessories.gui.screen.widgets.MilieuWidget;
+import eu.epycsolutions.labyaddon.playeraccessories.gui.screen.widget.widgets.activity.milieus.MilieuHeaderWidget;
+import eu.epycsolutions.labyaddon.playeraccessories.gui.screen.widget.widgets.activity.milieus.MilieuWidget;
 import net.labymod.api.Textures.SpriteCommon;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gui.HorizontalAlignment;
