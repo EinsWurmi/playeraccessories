@@ -76,3 +76,6 @@ build-data.txt
 
 # Don't ignore libraries
 !libs/*.jar
+
+# Ignore vs-code files
+.vscode
