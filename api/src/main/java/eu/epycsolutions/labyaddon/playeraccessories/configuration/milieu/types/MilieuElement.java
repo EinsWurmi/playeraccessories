@@ -4,12 +4,14 @@ import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.propert
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.MilieuHandler;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.SwappableInfo;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.accessors.MilieuAccessor;
+import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.annotation.MilieuOrder.Order;
 import net.labymod.api.Laby;
 import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.gui.screen.widget.Widget;
 import net.labymod.api.loader.LabyModLoader;
 import org.jetbrains.annotations.Nullable;
 import java.lang.annotation.Annotation;
+import java.util.function.BooleanSupplier;
 
 public class MilieuElement extends AbstractMilieuRegistry {
 
@@ -28,6 +30,8 @@ public class MilieuElement extends AbstractMilieuRegistry {
 
   private Annotation annotation;
   private Runnable resetListener;
+
+  private BooleanSupplier visibleSupplier;
 
   private boolean canForceEnable;
   private boolean extended;
@@ -54,7 +58,7 @@ public class MilieuElement extends AbstractMilieuRegistry {
   }
 
   public MilieuElement(String id, Icon icon, String customTranslation, String[] searchTags) {
-    this(id, icon, customTranslation, searchTags, null, (byte) 0, null, false);
+    this(id, icon, customTranslation, searchTags, null, Order.NORMAL, null, false);
   }
 
   public Widget[] getWidgets() {
@@ -89,6 +93,14 @@ public class MilieuElement extends AbstractMilieuRegistry {
     this.resetListener = resetListener;
   }
 
+  public boolean isVisible() {
+    return this.visibleSupplier == null || this.visibleSupplier.getAsBoolean();
+  }
+
+  public void setVisibleSupplier(BooleanSupplier visibleSupplier) {
+    this.visibleSupplier = visibleSupplier;
+  }
+
   public boolean isExtended() {
     return this.extended;
   }
@@ -116,7 +128,7 @@ public class MilieuElement extends AbstractMilieuRegistry {
     }
 
     if(this.swappableInfo.handler() != null) {
-      return (invert != this.swappableInfo.handler().isEnabled(this, value, this.swappableInfo));
+      return invert != this.swappableInfo.handler().isEnabled(this, value, this.swappableInfo);
     }
 
     CustomRequires<Object> swappable = enabledAccessor.property().getCustomRequires();
@@ -131,7 +143,7 @@ public class MilieuElement extends AbstractMilieuRegistry {
       return true;
     }
 
-    return (invert != swappable.isEnabled(value));
+    return invert != swappable.isEnabled(value);
   }
 
   public boolean hasControlButton() {
