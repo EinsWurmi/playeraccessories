@@ -3,7 +3,7 @@ package eu.epycsolutions.labyaddon.playeraccessories.configuration.loader;
 import eu.epycsolutions.labyaddon.playeraccessories.api.generated.ReferenceStorage;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.annotation.Exclude;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.annotation.OSCompatibility;
-import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.annotation.ParentSwitch;
+import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.annotation.ParentSwap;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.annotation.PermissionRequired;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.annotation.SearchTag;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.annotation.SpriteSlot;
@@ -36,10 +36,18 @@ import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.widget.
 import eu.epycsolutions.labyaddon.playeraccessories.events.milieu.MilieuCreateEvent;
 import net.labymod.api.Laby;
 import net.labymod.api.LabyAPI;
+import net.labymod.api.addon.AddonService;
 import net.labymod.api.client.gui.icon.Icon;
 import net.labymod.api.client.resources.texture.ThemeTextureLocation;
+import net.labymod.api.configuration.loader.annotation.ModRequirement;
+import net.labymod.api.configuration.loader.annotation.ModRequirement.RequirementState;
+import net.labymod.api.configuration.loader.annotation.ModRequirement.RequirementType;
+import net.labymod.api.configuration.loader.annotation.OptiFineRequirement;
 import net.labymod.api.models.OperatingSystem;
 import net.labymod.api.models.version.Version;
+import net.labymod.api.modloader.ModLoader;
+import net.labymod.api.modloader.ModLoaderRegistry;
+import net.labymod.api.thirdparty.optifine.OptiFine;
 import net.labymod.api.util.logging.Logging;
 import net.labymod.api.util.reflection.Reflection;
 import net.labymod.api.util.version.VersionRange;
@@ -60,6 +68,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 
 public class Config implements ConfigAccessor {
 
@@ -229,14 +238,15 @@ public class Config implements ConfigAccessor {
 
         icon = Icon.sprite(
             textureLocation,
-            slot.x(), slot.y(),
-            slot.size(), slot.size()
+            slot.x(),
+            slot.y(),
+            slot.size(),
+            slot.size()
         );
       }
     }
 
     String customTranslation;
-
     if(member.isAnnotationPresent(CustomTranslation.class)) {
       customTranslation = member.getAnnotation(CustomTranslation.class).value();
     } else if(customTranslationAnnotation != null) {
@@ -258,20 +268,22 @@ public class Config implements ConfigAccessor {
     if(searchTag != null) tags = searchTag.value();
 
     String requiredPermission = permissionRequired != null ? permissionRequired.value() : null;
-    boolean canForceEnabled = permissionRequired != null && permissionRequired.canForceEnable();
+    boolean canForceEnable = permissionRequired != null && permissionRequired.canForceEnable();
 
     SwappableInfo swappableInfo = swappable == null
         || id.equals(swappable.value())
         || member.isAnnotationPresent(MilieuRequiresExclude.class)
-          ? null
-          : new SwappableInfo(swappable.value(), swappable.invert(), swappable.required());
+        ? null
+        : new SwappableInfo(swappable.value(), swappable.invert(), swappable.required());
 
     byte orderValue = order == null ? Order.NORMAL : order.value();
 
-    MilieuElement milieu = new MilieuElement(id, icon, customTranslation, tags, requiredPermission, orderValue, swappableInfo, canForceEnabled);
+    MilieuElement milieu = new MilieuElement(id, icon, customTranslation, tags, requiredPermission, orderValue, swappableInfo, canForceEnable);
+    milieu.setVisibleSupplier(this.createVisibleSupplier(member));
     milieu.setExperimental(member.isAnnotationPresent(MilieuExperimental.class));
 
     MilieuAccessor accessor = this.getMilieuAccessor(member, milieu);
+
     if(accessor != null && List.class.isAssignableFrom(accessor.getType())) {
       try {
         return new ListMilieu(
@@ -280,7 +292,7 @@ public class Config implements ConfigAccessor {
             customTranslation,
             tags,
             requiredPermission,
-            canForceEnabled,
+            canForceEnable,
             swappableInfo,
             orderValue,
             accessor
@@ -292,11 +304,11 @@ public class Config implements ConfigAccessor {
 
     milieu.setAccessor(accessor);
 
-    if(member.isAnnotationPresent(ParentSwitch.class)) {
-      if(parent instanceof MilieuElement milieuElement) {
-        milieuElement.setSearchTags(tags);
-        milieuElement.setAdvancedAccessor(accessor);
-        milieuElement.setRequiredPermission(requiredPermission);
+    if(member.isAnnotationPresent(ParentSwap.class)) {
+      if(parent instanceof MilieuElement parentElement) {
+        parentElement.setSearchTags(tags);
+        parentElement.setAdvancedAccessor(accessor);
+        parentElement.setRequiredPermission(requiredPermission);
 
         return milieu;
       }
@@ -318,6 +330,46 @@ public class Config implements ConfigAccessor {
     if(handler != null) handler.created(milieu);
 
     return milieu;
+  }
+
+  private <T extends Member & AnnotatedElement> BooleanSupplier createVisibleSupplier(T member) {
+    if(member.isAnnotationPresent(ModRequirement.class)) {
+      ModRequirement modRequirement = member.getAnnotation(ModRequirement.class);
+
+      boolean requiresInstalled = modRequirement.state() == RequirementState.INSTALLED;
+      String namespace = modRequirement.namespace();
+      BooleanSupplier installedSupplier;
+
+      if(namespace.equals(OptiFine.NAMESPACE) || namespace.equals(OptiFine.FABRIC_MOD_ID)) {
+        throw new IllegalStateException("Use @OptiFineRequirement instead of @ModRequirement for " + namespace);
+      }
+
+      RequirementType type = modRequirement.type();
+      if(type == RequirementType.ADDON) {
+        AddonService addonService = Laby.labyAPI().addonService();
+        installedSupplier = () -> addonService.getAddon(namespace).isPresent();
+      } else {
+        ModLoaderRegistry modLoaderRegistry = Laby.references().modLoaderRegistry();
+        installedSupplier = () -> {
+          ModLoader modLoader = modLoaderRegistry.getById(type.getLoaderId());
+          if(modLoader == null) return false;
+
+          return modLoader.isModLoaded(namespace);
+        };
+      }
+
+      return () -> requiresInstalled == installedSupplier.getAsBoolean();
+    }
+
+    if(member.isAnnotationPresent(OptiFineRequirement.class)) {
+      OptiFineRequirement optiFineRequirement = member.getAnnotation(OptiFineRequirement.class);
+      boolean requiresInstalled = optiFineRequirement.value() == RequirementState.INSTALLED;
+      OptiFine optiFine = Laby.references().optiFine();
+
+      return () -> requiresInstalled == optiFine.isOptiFinePresent();
+    }
+
+    return null;
   }
 
   @SuppressWarnings("rawtypes")
