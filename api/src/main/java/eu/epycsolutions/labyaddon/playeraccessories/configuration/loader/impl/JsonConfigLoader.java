@@ -47,88 +47,97 @@ public class JsonConfigLoader extends AbstractConfigLoader {
 
     try {
       if(IOUtil.exists(path)) {
-        try(BufferedReader reader = Files.newBufferedReader(path)) {
+        BufferedReader reader = Files.newBufferedReader(path);
+
+        try {
           JsonObject jsonObject = this.gson.fromJson(reader, JsonObject.class);
           JsonObject converted = getConvertedConfigJson(clazz, jsonObject);
 
-          T config = this.gson.fromJson(converted, clazz);
-          return config == null ? loadConfig(clazz) : config;
+          ConfigAccessor configAccessor = this.gson.fromJson(converted, clazz);
+          T t = (T)((configAccessor == null) ? loadConfig(clazz) : configAccessor);
+
+          if(reader != null) reader.close();
+          return t;
+        } catch(Throwable throwable) {
+          try {
+            reader.close();
+          } catch(Throwable throwable1) {
+            throwable.addSuppressed(throwable1);
+          }
+
+          throw throwable;
         }
-      } else {
-        return loadConfig(clazz);
       }
+
+      return loadConfig(clazz);
     } catch(Exception exception) {
       throw new ConfigLoadException(clazz, exception);
     }
   }
 
   private <T extends ConfigAccessor> JsonObject getConvertedConfigJson(Class<T> clazz, JsonObject jsonObject) {
-    try {
-      Reflection.getFields(clazz, false, (member) -> {
-        if(member.isAnnotationPresent(Exclude.class) || !jsonObject.has(member.getName())) return;
+    Reflection.getFields(clazz, false, (member) -> {
+      if(member.isAnnotationPresent(Exclude.class) || !jsonObject.has(member.getName())) return;
+      JsonElement jsonElement = jsonObject.get(member.getName());
 
-        JsonElement jsonElement = jsonObject.get(member.getName());
-        if(!jsonElement.isJsonObject() || !ConfigAccessor.class.isAssignableFrom(member.getType())) {
-          Class<?> type = member.getType();
-          Type genericType = member.getGenericType();
+      if(!jsonElement.isJsonObject() || !ConfigAccessor.class.isAssignableFrom(member.getType())) {
+        Class<?> type = member.getType();
+        Type genericType = member.getGenericType();
 
-          if(ConfigProperty.class.isAssignableFrom(type) && genericType instanceof ParameterizedType) {
+        if(ConfigProperty.class.isAssignableFrom(type) && genericType instanceof ParameterizedType parameterizedType) {
+          Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
+          for(Type actualTypeArgument : actualTypeArguments) {
+            if(actualTypeArgument instanceof Class) {
+              type = (Class) actualTypeArgument;
+              genericType = type;
+              break;
+            }
+
+            if(actualTypeArgument instanceof ParameterizedType) {
+              ParameterizedType subType = (ParameterizedType) actualTypeArgument;
+              type = (Class) subType.getRawType();
+              genericType = subType;
+              break;
+            }
+          }
+        }
+
+        if(jsonElement.isJsonArray() && List.class.isAssignableFrom(type)) {
+          Class<? extends ConfigAccessor> accessorClass = null;
+
+          if(genericType instanceof ParameterizedType) {
             ParameterizedType parameterizedType = (ParameterizedType) genericType;
             Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
-            for(Type actualTypeArgument : actualTypeArguments) {
-              if(actualTypeArgument instanceof Class) {
-                type = (Class<?>) actualTypeArgument;
-                genericType = type;
-                break;
-              } else if(actualTypeArgument instanceof ParameterizedType) {
-                ParameterizedType subType = (ParameterizedType) actualTypeArgument;
-                type = (Class<?>) subType.getRawType();
-                genericType = subType;
-                break;
-              }
+            if(actualTypeArguments.length != 0 && actualTypeArguments[0] instanceof Class) {
+              Class<?> genericClass = (Class) actualTypeArguments[0];
+              if(ConfigAccessor.class.isAssignableFrom(genericClass)) accessorClass = (Class) genericClass;
             }
           }
 
-          if(jsonElement.isJsonArray() && List.class.isAssignableFrom(type)) {
-            Class<? extends ConfigAccessor> accessorClass = null;
-
-            if(genericType instanceof ParameterizedType) {
-              ParameterizedType parameterizedType = (ParameterizedType) genericType;
-              Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-
-              if(actualTypeArguments.length != 0 && actualTypeArguments[0] instanceof Class) {
-                Class<?> genericClass = (Class<?>) actualTypeArguments[0];
-                if(ConfigAccessor.class.isAssignableFrom(genericClass)) accessorClass = (Class<? extends ConfigAccessor>) genericClass;
-              }
-            }
-
-            if(accessorClass != null) {
-              JsonArray newArray = new JsonArray();
-
-              for(JsonElement element : jsonElement.getAsJsonArray()) {
-                if(element.isJsonObject()) {
-                  newArray.add(getConvertedConfigJson(accessorClass, element.getAsJsonObject()));
-                } else {
-                  return;
-                }
+          if(accessorClass != null) {
+            JsonArray newArray = new JsonArray();
+            for(JsonElement element : jsonElement.getAsJsonArray()) {
+              if(element.isJsonObject()) {
+                newArray.add(getConvertedConfigJson(accessorClass, element.getAsJsonObject()));
+                continue;
               }
 
-              jsonObject.add(member.getName(), newArray);
+              return;
             }
 
-            return;
+            jsonObject.add(member.getName(), newArray);
           }
 
           return;
         }
 
-        Class<? extends ConfigAccessor> configAccessorClass = (Class<? extends ConfigAccessor>) member.getType();
-        jsonObject.add(member.getName(), getConvertedConfigJson(configAccessorClass, jsonElement.getAsJsonObject()));
-      });
-    } catch(Exception exception) {
-      exception.printStackTrace();
-    }
+        return;
+      }
+
+      Class<? extends ConfigAccessor> configAccessorClass = (Class) member.getType();
+      jsonObject.add(member.getName(), getConvertedConfigJson(configAccessorClass, jsonElement.getAsJsonObject()));
+    });
 
     return jsonObject;
   }
@@ -154,9 +163,19 @@ public class JsonConfigLoader extends AbstractConfigLoader {
 
     try {
       if(!IOUtil.exists(parent)) IOUtil.createDirectories(parent);
+      BufferedWriter writer = Files.newBufferedWriter(path);
 
-      try(BufferedWriter writer = Files.newBufferedWriter(parent)) {
+      try {
         this.gson.toJson(config, writer);
+        if(writer != null) writer.close();
+      } catch(Throwable throwable) {
+        try {
+          writer.close();
+        } catch(Throwable throwable1) {
+          throwable.addSuppressed(throwable1);
+        }
+
+        throw throwable;
       }
     } catch(Exception exception) {
       throw new ConfigSaveException(config, exception);
