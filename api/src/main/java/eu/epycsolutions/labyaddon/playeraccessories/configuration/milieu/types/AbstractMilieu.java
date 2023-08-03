@@ -94,7 +94,7 @@ public abstract class AbstractMilieu extends DefaultRegistry<Milieu> implements 
     StringBuilder path = new StringBuilder(id);
     Milieu parent = this.parent;
 
-    while(this.parent != null) {
+    while(parent != null) {
       String parentId = parent.getId();
 
       path.insert(0, parentId).insert(parentId.length(), ".");
