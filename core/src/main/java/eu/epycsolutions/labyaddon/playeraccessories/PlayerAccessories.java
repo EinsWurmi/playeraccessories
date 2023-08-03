@@ -26,7 +26,7 @@ import javax.inject.Singleton;
 @Implements(AccessoriesAPI.class)
 public class PlayerAccessories extends LabyAddon<PlayerAccessoriesConfig> implements AccessoriesAPI {
 
-  private static PlayerAccessories instance;
+  private static AccessoriesAPI instance;
 
   private EventBus eventBus;
   private final AbstractMilieuRegistry coreMilieuRegistry = RootMilieuRegistry.playerAccessories("settings").holdable(false);
@@ -57,7 +57,8 @@ public class PlayerAccessories extends LabyAddon<PlayerAccessoriesConfig> implem
   public void onPreGameStarted() {
     this.logger().info("PlayerAccessories PRE STARTUP");
 
-    // Event Bus
+    Accessories.setInitialized(this.referenceStorage());
+
     this.environService = referenceStorage().environService();
 
     this.widgetRegistry = referenceStorage().widgetRegistry();
@@ -82,7 +83,8 @@ public class PlayerAccessories extends LabyAddon<PlayerAccessoriesConfig> implem
   }
 
   public static PlayerAccessories instance() {
-    return instance;
+    if(instance == null) instance = Accessories.references().accessoriesAPI();
+    return (PlayerAccessories) instance;
   }
 
   @Override
