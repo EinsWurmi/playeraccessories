@@ -117,7 +117,7 @@ public class MilieuWidget extends FlexibleContentWidget {
         ContextMenu contextMenu = createContextMenu();
         contextMenu.with(ContextMenuEntry.builder()
             .icon(SpriteCommon.TRASH)
-            .text(Component.translatable("labymod,ui,button.reset"))
+            .text(Component.translatable("labymod.ui.button.reset"))
             .disabled(() -> {
               boolean resettable = milieuElement.isResettable();
               if(!resettable) {
@@ -130,7 +130,7 @@ public class MilieuWidget extends FlexibleContentWidget {
               }
 
               return !resettable;
-            }).clickHandler((contextMenuEntry, o) -> MilieuWidget.this.resetMilieu(milieuElement)).build()
+            }).clickHandler((contextMenuEntry, o) -> this.resetMilieu(milieuElement)).build()
         );
 
         ClientPermission permission = getPermission();
