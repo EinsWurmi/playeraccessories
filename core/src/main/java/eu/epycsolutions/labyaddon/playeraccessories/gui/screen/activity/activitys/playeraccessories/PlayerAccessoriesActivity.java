@@ -14,7 +14,7 @@ public class PlayerAccessoriesActivity extends TabbedActivity {
 
   public PlayerAccessoriesActivity() {
     register(
-        "settings",
+        "milieus",
         new DefaultComponentTab("PlayerAccessories", new MilieuActivity(PlayerAccessories.instance().coreMilieuRegistry()))
     );
   }

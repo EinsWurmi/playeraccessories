@@ -30,7 +30,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @AutoActivity
-@Link("activity/milieu.lss")
+@Link("activity/milieus.lss")
 public class MilieuActivity extends AbstractSidebarActivity {
 
   private final AbstractMilieuRegistry registry;
