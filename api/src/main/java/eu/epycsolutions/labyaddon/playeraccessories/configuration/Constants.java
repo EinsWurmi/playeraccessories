@@ -1,5 +1,6 @@
 package eu.epycsolutions.labyaddon.playeraccessories.configuration;
 
+import net.labymod.api.Constants.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
@@ -9,7 +10,8 @@ public class Constants {
     public static final Path LABYMOD_DIRECTORY = net.labymod.api.Constants.Files.LABYMOD_DIRECTORY;
     public static final Path LABYMOD_ASSETS = net.labymod.api.Constants.Files.LABYMOD_ASSETS;
 
-    public static final Path PLAYERACCESSORIES_ADDON_CONFIG = LABYMOD_DIRECTORY.resolve("configs/player-accessories");
+    public static final Path CONFIGS_DIRECTORY = net.labymod.api.Constants.Files.CONFIGS;
+    public static final Path PLAYERACCESSORIES_ADDON_CONFIG = CONFIGS_DIRECTORY.resolve("player-accessories");
 
     public static final Path ENVIRON_MILIEUS = PLAYERACCESSORIES_ADDON_CONFIG.resolve("milieus");
   }
