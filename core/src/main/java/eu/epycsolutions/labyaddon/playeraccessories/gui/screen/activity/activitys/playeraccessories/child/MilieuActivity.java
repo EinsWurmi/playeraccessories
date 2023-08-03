@@ -91,7 +91,7 @@ public class MilieuActivity extends AbstractSidebarActivity {
 
     categoryList.addChild(environHr);
     categoryList.addChild(
-        ComponentWidget.i18n("player-accessories.ui.activity.settings.environs.name").addId("category-sub"));
+        ComponentWidget.i18n("player-accessories.ui.milieus.environs.name").addId("category-sub"));
   }
 
   @Override

@@ -14,7 +14,7 @@ import net.labymod.api.client.gui.screen.widget.widgets.layout.list.VerticalList
 import net.labymod.api.client.gui.screen.widget.widgets.renderer.HrWidget;
 import net.labymod.api.client.gui.screen.widget.widgets.renderer.ScreenRendererWidget;
 
-@Link("activity/abstract-sidebar.lss")
+@Link("activity/sidebar-activity.lss")
 public abstract class AbstractSidebarActivity extends Activity {
 
   private final ListSession<Widget> listSession = new ListSession<>();
