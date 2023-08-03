@@ -4,10 +4,14 @@ import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.ConfigA
 
 public interface AccessoriesConfig extends ConfigAccessor {
 
-  AppearanceConfig appearanceConfig();
+  IngameConfig ingame();
 
-  DeveloperConfig developerConfig();
+  AppearanceConfig appearance();
 
-  HotkeyConfig hotkeyConfig();
+  HotkeyConfig hotkey();
+
+  NotificationsConfig notifications();
+
+  OtherConfig other();
 
 }
