@@ -58,7 +58,7 @@ public class RootMilieuRegistry extends AbstractMilieuRegistry {
   }
 
   public String getTranslationKey() {
-    return this.namespace + ".ui.activity.settings." + this.namespace;
+    return this.namespace + ".ui.milieus." + this.namespace;
   }
 
 }
