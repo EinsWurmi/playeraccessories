@@ -6,25 +6,39 @@ import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.annotat
 @ConfigName("settings")
 public class DefaultAccessoriesConfig extends Config implements AccessoriesConfig {
 
+  private final DefaultIngameConfig ingame = new DefaultIngameConfig();
+
   private final DefaultAppearanceConfig appearance = new DefaultAppearanceConfig();
 
-  private final DefaultDeveloperConfig developer = new DefaultDeveloperConfig();
+  private final DefaultNotificationsConfig notifications = new DefaultNotificationsConfig();
 
   private final DefaultHotkeyConfig hotkeys = new DefaultHotkeyConfig();
 
+  private final DefaultOtherConfig other = new DefaultOtherConfig();
+
   @Override
-  public AppearanceConfig appearanceConfig() {
+  public IngameConfig ingame() {
+    return this.ingame;
+  }
+
+  @Override
+  public AppearanceConfig appearance() {
     return this.appearance;
   }
 
   @Override
-  public DeveloperConfig developerConfig() {
-    return this.developer;
+  public NotificationsConfig notifications() {
+    return this.notifications;
   }
 
   @Override
-  public HotkeyConfig hotkeyConfig() {
+  public HotkeyConfig hotkey() {
     return this.hotkeys;
+  }
+
+  @Override
+  public OtherConfig other() {
+    return this.other;
   }
 
 }
