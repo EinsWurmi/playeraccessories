@@ -31,7 +31,7 @@ public abstract class AbstractConfigLoader implements ConfigLoader {
 
   @Override
   public void setVariable(String key, Object value) {
-    variables.put(key, value.toString());
+    this.variables.put(key, value.toString());
   }
 
   protected String replaceVariables(String configPath) {
