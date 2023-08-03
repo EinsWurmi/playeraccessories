@@ -1,6 +1,7 @@
 package eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.widget;
 
-import eu.epycsolutions.labyaddon.playeraccessories.api.generated.ReferenceStorage;
+import eu.epycsolutions.labyaddon.playeraccessories.Accessories;
+import eu.epycsolutions.labyaddon.playeraccessories.AccessoriesAPI;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.Milieu;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.MilieuInfo;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.accessors.MilieuAccessor;
@@ -18,10 +19,14 @@ public interface WidgetRegistry {
 
   Widget[] createWidgets(Milieu milieu, Annotation annotation, MilieuInfo<?> info, MilieuAccessor accessor);
 
+  default Widget[] createWidgets(MilieuInfo<?> info, MilieuAccessor accessor) {
+    return this.createWidgets(null, info, accessor);
+  }
+
   default Widget[] createWidgets(Milieu milieu, MilieuInfo<?> info, MilieuAccessor accessor) {
     for(Annotation annotation : info.member().getDeclaredAnnotations()) {
-      ReferenceStorage referenceStorage = new ReferenceStorage();
-      WidgetRegistry widgetRegistry = referenceStorage.widgetRegistry();
+      AccessoriesAPI accessoriesAPI = Accessories.accessoriesAPI();
+      WidgetRegistry widgetRegistry = accessoriesAPI.widgetRegistry();
       Widget[] widgets = widgetRegistry.createWidgets(milieu, annotation, info, accessor);
 
       if(widgets != null) {
@@ -36,5 +41,7 @@ public interface WidgetRegistry {
 
     return null;
   }
+
+  Class<? extends Widget> getWidgetTypeByAnnotation(Annotation annotation);
 
 }

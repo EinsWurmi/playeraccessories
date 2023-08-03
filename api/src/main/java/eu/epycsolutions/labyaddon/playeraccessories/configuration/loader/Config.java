@@ -1,6 +1,7 @@
 package eu.epycsolutions.labyaddon.playeraccessories.configuration.loader;
 
-import eu.epycsolutions.labyaddon.playeraccessories.api.generated.ReferenceStorage;
+import eu.epycsolutions.labyaddon.playeraccessories.Accessories;
+import eu.epycsolutions.labyaddon.playeraccessories.AccessoriesAPI;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.annotation.Exclude;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.annotation.OSCompatibility;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.annotation.ParentSwap;
@@ -109,7 +110,7 @@ public class Config implements ConfigAccessor {
   @NotNull
   public List<Milieu> toMilieus(@Nullable Milieu parent, SpriteTexture texture) {
     LabyAPI labyAPI = Laby.labyAPI();
-    ReferenceStorage referenceStorage = new ReferenceStorage();
+    AccessoriesAPI accessoriesAPI = Accessories.accessoriesAPI();
     List<TempMilieu> tempMilieus = new ArrayList<>();
 
     if(this.getClass().isAnnotationPresent(SpriteTexture.class)) {
@@ -170,7 +171,7 @@ public class Config implements ConfigAccessor {
               Class<? extends SwappableHandler> swappableClass = swapElement.swappable();
 
               if(swappableClass != SwappableHandler.class) {
-                SwappableHandler swappableHandler = referenceStorage.swappableHandlerRegistry().getHandler(swappableClass);
+                SwappableHandler swappableHandler = accessoriesAPI.referenceStorage().swappableHandlerRegistry().getHandler(swappableClass);
                 if(swappableHandler != null) swappableInfo.setHandler(swappableHandler);
               }
             }
@@ -216,8 +217,8 @@ public class Config implements ConfigAccessor {
       CustomTranslation customTranslationAnnotation,
       T member
   ) {
-    ReferenceStorage referenceStorage = new ReferenceStorage();
-    WidgetRegistry registry = referenceStorage.widgetRegistry();
+    AccessoriesAPI accessoriesAPI = Accessories.accessoriesAPI();
+    WidgetRegistry registry = accessoriesAPI.widgetRegistry();
 
     String id = member.getName();
     Icon icon = null;
