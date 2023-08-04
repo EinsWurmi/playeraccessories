@@ -1,0 +1,31 @@
+{
+  "player-accessories": {
+    "ui": {
+      "navigation": {
+        "player-accessories": "PlayerAccessories"
+      },
+      "textfield": {
+        "search": "Search..."
+      },
+      "milieus": {
+        "player-accessories": {
+          "ingame": {
+            "name": "Ingame"
+          },
+          "appearance": {
+            "name": "Appearance"
+          },
+          "notifications": {
+            "name": "Notifications"
+          },
+          "hotkeys": {
+            "name": "Hotkeys"
+          },
+          "other": {
+            "name": "Other"
+          }
+        }
+      }
+    }
+  }
+}
