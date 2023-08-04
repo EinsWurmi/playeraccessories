@@ -21,7 +21,7 @@ public class Constants {
 
     // Addon files
     public static final Path ENVIRONS_INDEX = DATA_CACHE.resolve("environs-index.json");
-    public static final Path ENVIRONS_SCHEDULED_FOR_REMOVAL = PLAYERACCESSORIES_ADDON_CONFIG.resolve(".efr");
+    public static final Path ENVIRONS_SCHEDULED_FOR_REMOVAL = PLAYERACCESSORIES_ADDON_CONFIG.resolve(".envifr");
   }
 
   @Deprecated
