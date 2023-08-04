@@ -1,24 +1,55 @@
 package eu.epycsolutions.labyaddon.playeraccessories.environ;
 
+import eu.epycsolutions.labyaddon.playeraccessories.model.environ.info.InstalledEnvironInfo;
 import net.labymod.api.reference.annotation.Referenceable;
 import org.jetbrains.annotations.ApiStatus.Internal;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import java.util.Collection;
 import java.util.Optional;
 
 @Referenceable
 public interface EnvironService {
 
-  void registerEnviron(Environ environ);
+  @NotNull
+  Optional<LoadedEnviron> getEnviron(String namespace);
+
+  Optional<LoadedEnviron> getOptionalEnviron(String id);
+
+  @NotNull
+  default Optional<LoadedEnviron> getEnviron(@NotNull Class<?> clazz) {
+    return this.getEnviron(clazz.getClassLoader());
+  }
+
+  @NotNull
+  Optional<LoadedEnviron> getEnviron(ClassLoader classLoader);
+
+  Collection<LoadedEnviron> getLoadedEnvirons();
+
+  Collection<LoadedEnviron> getVisibleEnvirons();
+
+  @Nullable
+  InstalledEnvironInfo getEnvironInfo(String id);
+
+  Class<?> loadClassFromEnviron(String name) throws ClassNotFoundException;
+
+  LoadedEnviron getLastCallerEnviron();
+
+  @Nullable
+  String getClassPathEnviron();
+
+  boolean isEnabled(Object instance);
+
+  boolean isEnabled(Class<?> clazz);
 
   boolean isEnabled(String namespace);
 
-  @NotNull
-  Optional<Environ> getEnviron(String namespace);
+  boolean isEnabled(InstalledEnvironInfo environInfo, boolean backgroundMeta);
 
   @Internal
-  void registerConfiguration(String namespace, EnvironConfig environConfig);
+  void registerMainConfiguration(String namespace, EnvironConfig environConfig);
 
   @Internal
-  boolean hasConfiguration(String namespace);
+  boolean hasMainConfiguration(String namespace);
 
 }
