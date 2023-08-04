@@ -130,7 +130,10 @@ public class MilieuWidget extends FlexibleContentWidget {
               }
 
               return !resettable;
-            }).clickHandler((contextMenuEntry, o) -> this.resetMilieu(milieuElement)).build()
+            }).clickHandler((contextMenuEntry) -> {
+              this.resetMilieu(milieuElement);
+              return true;
+            }).build()
         );
 
         ClientPermission permission = getPermission();
