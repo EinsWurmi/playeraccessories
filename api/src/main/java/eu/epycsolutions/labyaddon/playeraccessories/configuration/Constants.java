@@ -7,13 +7,21 @@ import java.nio.file.Paths;
 public class Constants {
 
   public static class AccessoriesFiles {
+    // LabyMod directories
     public static final Path LABYMOD_DIRECTORY = net.labymod.api.Constants.Files.LABYMOD_DIRECTORY;
     public static final Path LABYMOD_ASSETS = net.labymod.api.Constants.Files.LABYMOD_ASSETS;
 
+    // Addon directories
     public static final Path CONFIGS_DIRECTORY = net.labymod.api.Constants.Files.CONFIGS;
     public static final Path PLAYERACCESSORIES_ADDON_CONFIG = CONFIGS_DIRECTORY.resolve("player-accessories");
+    public static final Path DATA_CACHE = PLAYERACCESSORIES_ADDON_CONFIG.resolve("cache");
 
+    public static final Path ENVIRON_DIRECTORY = PLAYERACCESSORIES_ADDON_CONFIG.resolve("environs");
     public static final Path ENVIRON_MILIEUS = PLAYERACCESSORIES_ADDON_CONFIG.resolve("milieus");
+
+    // Addon files
+    public static final Path ENVIRONS_INDEX = DATA_CACHE.resolve("environs-index.json");
+    public static final Path ENVIRONS_SCHEDULED_FOR_REMOVAL = PLAYERACCESSORIES_ADDON_CONFIG.resolve(".efr");
   }
 
   @Deprecated
