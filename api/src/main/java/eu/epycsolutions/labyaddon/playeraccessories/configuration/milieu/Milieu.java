@@ -21,8 +21,6 @@ import java.util.Optional;
 
 public interface Milieu extends Identifiable, Registry<Milieu> {
 
-  public static final String CONFIG_CHANGE_IDENTIFIER = "PlayerAccessoriesMilieu";
-
   default boolean isEnabled() {
     MilieuHandler handler = handler();
     return (handler == null || handler.isEnabled(this));
@@ -39,7 +37,7 @@ public interface Milieu extends Identifiable, Registry<Milieu> {
   }
 
   default MilieuContentActivity createActivityLazy() {
-    return new MilieuContentActivity(this, true);
+    return new MilieuContentActivity(this);
   }
 
   default void initialize() {

@@ -40,7 +40,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 @AutoActivity
-@Links({ @Link("activity/tabbed.lss"), @Link(value = "activity/milieus.lss", priority = Priority.EARLY) })
+@Links({ @Link("tabbed.lss"), @Link(value = "activity/milieus.lss", priority = Priority.EARLY) })
 public class MilieuContentActivity extends Activity {
 
   private final Milieu originMilieuHolder;
@@ -53,7 +53,9 @@ public class MilieuContentActivity extends Activity {
   private HeaderType headerType;
   private final boolean lazy;
 
-  public MilieuContentActivity(Milieu holder) { this(holder, false); }
+  public MilieuContentActivity(Milieu holder) {
+    this(holder, true);
+  }
 
   public MilieuContentActivity(Milieu holder, boolean lazy) {
     if(!holder.isInitialized()) throw new IllegalStateException("Milieu is not initialized yet.");
@@ -101,7 +103,8 @@ public class MilieuContentActivity extends Activity {
       if(this.closeHandler != null || hasParent || (!isOriginHolder() && isOriginFiltered())) {
         ButtonWidget backButton = ButtonWidget.icon(Icon.sprite8(SpriteCommon.TEXTURE, 4, 4));
         backButton.addId("button-back");
-        if(this.currentMilieuHolder == this.originMilieuHolder) backButton.addId("back-button-origin");
+        if(this.currentMilieuHolder == this.originMilieuHolder) backButton.addId("button-back-origin");
+        if(this.currentMilieuHolder.hasParent() && this.currentMilieuHolder.parent() instanceof ListMilieu) backButton.addId("button-back-list-entry");
         backButton.setPressable(() -> {
           if(hasParent) this.currentMilieuHolder = this.currentMilieuHolder.parent();
           else {
@@ -132,7 +135,7 @@ public class MilieuContentActivity extends Activity {
 
       if(this.currentMilieuHolder instanceof ListMilieu) {
         ButtonWidget addButton = ButtonWidget.icon(Icon.sprite8(SpriteCommon.TEXTURE, 3, 5));
-        addButton.addId("button-id");
+        addButton.addId("button-add");
         addButton.setPressable(() -> {
           ListMilieu list = (ListMilieu) this.currentMilieuHolder;
           this.currentMilieuHolder = list.createNew();
@@ -175,9 +178,9 @@ public class MilieuContentActivity extends Activity {
 
         container.addFlexibleContent(screenRendererWidget);
         this.document().addChild(container);
-      }
 
-      return;
+        return;
+      }
     }
 
     VerticalListWidget<Widget> milieuList = new VerticalListWidget<>();
@@ -224,7 +227,7 @@ public class MilieuContentActivity extends Activity {
         continue;
       }
 
-      list.add(new MilieuWidget(milieu, lazy, (layer) -> {
+      list.add(new MilieuWidget(milieu, this.lazy, (layer) -> {
         this.currentMilieuHolder = (layer != null) ? layer : parentMilieu;
 
         if(this.screenCallback != null) this.currentMilieuHolder = this.screenCallback.apply(this.currentMilieuHolder);

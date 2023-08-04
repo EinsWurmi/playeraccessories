@@ -5,7 +5,7 @@ import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.Milieu;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.MilieuGroup;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.AbstractMilieuRegistry;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.RootMilieuRegistry;
-import eu.epycsolutions.labyaddon.playeraccessories.environ.Environ;
+import eu.epycsolutions.labyaddon.playeraccessories.environ.LoadedEnviron;
 import eu.epycsolutions.labyaddon.playeraccessories.gui.screen.activity.activitys.playeraccessories.AbstractSidebarActivity;
 import eu.epycsolutions.labyaddon.playeraccessories.gui.screen.activity.playeraccessories.childs.MilieuContentActivity;
 import eu.epycsolutions.labyaddon.playeraccessories.gui.screen.widget.widgets.activity.milieus.CategoryWidget;
@@ -61,11 +61,10 @@ public class MilieuActivity extends AbstractSidebarActivity {
   public void onCategoryListInitialize(VerticalListWidget<Widget> categoryList) {
     boolean searching = !searchField.getText().trim().isEmpty();
 
-    List<Environ> environCategories = new ArrayList<>();
+    List<LoadedEnviron> environCategories = new ArrayList<>();
     registry.forEach((category) -> {
       if(category instanceof RootMilieuRegistry && ((RootMilieuRegistry) category).isEnviron()) {
         String namespace = ((RootMilieuRegistry) category).getNamespace();
-
         PlayerAccessories playerAccessories = PlayerAccessories.instance();
 
         playerAccessories.environService().getEnviron(namespace).ifPresent(environCategories::add);
@@ -111,35 +110,35 @@ public class MilieuActivity extends AbstractSidebarActivity {
   }
 
   public void resetSearch() {
-    if(!(selectedMilieu instanceof MilieuGroup)) {
-      selectedMilieu = (selectedMilieu == null) ? defaultMilieu : selectedMilieu;
-      displayScreen(selectedMilieu.createActivityLazy());
+    if(!(this.selectedMilieu instanceof MilieuGroup)) {
+      this.selectedMilieu = (this.selectedMilieu == null) ? this.defaultMilieu : this.selectedMilieu;
+      displayScreen(this.selectedMilieu.createActivityLazy());
 
       return;
     }
 
     Milieu previousMilieu = this.previousMilieu;
     if(previousMilieu instanceof MilieuGroup) {
-      selectedMilieu = defaultMilieu;
-      displayScreen(selectedMilieu.createActivityLazy());
+      this.selectedMilieu = this.defaultMilieu;
+      displayScreen(this.selectedMilieu.createActivityLazy());
 
       return;
     }
 
-    selectedMilieu = previousMilieu;
+    this.selectedMilieu = previousMilieu;
     displayScreen(previousMilieu.createActivityLazy());
   }
 
   private boolean updateScreen() {
-    String text = searchField.getText().trim();
+    String text = this.searchField.getText().trim();
 
     if(text.isEmpty()) {
-      searchField.setEditable(true);
+      this.searchField.setEditable(true);
 
-      if(selectedMilieu == null) return true;
-      if(temporaryMilieuWidget != null) {
-        screenRendererWidget.removeChild(temporaryMilieuWidget);
-        temporaryMilieuWidget = null;
+      if(this.selectedMilieu == null) return true;
+      if(this.temporaryMilieuWidget != null) {
+        this.screenRendererWidget.removeChild(this.temporaryMilieuWidget);
+        this.temporaryMilieuWidget = null;
       }
 
       resetSearch();
@@ -148,10 +147,10 @@ public class MilieuActivity extends AbstractSidebarActivity {
 
     if(text.length() < 2) {
       displayScreen((Activity) null);
-      if(temporaryMilieuWidget != null) screenRendererWidget.removeChild(temporaryMilieuWidget);
+      if(this.temporaryMilieuWidget != null) this.screenRendererWidget.removeChild(this.temporaryMilieuWidget);
 
-      temporaryMilieuWidget = createEmptyMilieu(text, "tooShort");
-      screenRendererWidget.addChildInitialized(temporaryMilieuWidget);
+      this.temporaryMilieuWidget = createEmptyMilieu(text, "tooShort");
+      this.screenRendererWidget.addChildInitialized(this.temporaryMilieuWidget);
 
       return true;
     }
@@ -159,51 +158,51 @@ public class MilieuActivity extends AbstractSidebarActivity {
     List<Milieu> milieus = registry.collect((milieu) -> filterMilieus(text, milieu));
     if(milieus.isEmpty()) {
       displayScreen((Activity) null);
-      if(temporaryMilieuWidget != null) screenRendererWidget.removeChild(temporaryMilieuWidget);
+      if(this.temporaryMilieuWidget != null) this.screenRendererWidget.removeChild(this.temporaryMilieuWidget);
 
-      temporaryMilieuWidget = createEmptyMilieu(text, "noResults");
-      screenRendererWidget.addChildInitialized(temporaryMilieuWidget);
+      this.temporaryMilieuWidget = createEmptyMilieu(text, "noResults");
+      this.screenRendererWidget.addChildInitialized(this.temporaryMilieuWidget);
 
       return false;
     }
 
-    if(temporaryMilieuWidget != null) {
-      screenRendererWidget.removeChild(temporaryMilieuWidget);
-      temporaryMilieuWidget = null;
+    if(this.temporaryMilieuWidget != null) {
+      this.screenRendererWidget.removeChild(this.temporaryMilieuWidget);
+      this.temporaryMilieuWidget = null;
     }
 
     MilieuGroup group = MilieuGroup.named(Component.text(text)).of(milieus).filtered(true);
-    if(!(selectedMilieu instanceof MilieuGroup)) previousMilieu = selectedMilieu;
+    if(!(this.selectedMilieu instanceof MilieuGroup)) this.previousMilieu = this.selectedMilieu;
 
-    selectedMilieu = group;
+    this.selectedMilieu = group;
     MilieuContentActivity activity = group.createActivityLazy();
     activity.screenCallback((milieu) -> {
       if(milieu == group) {
-        lastFilter = null;
-        searchField.setEditable(true);
+        this.lastFilter = null;
+        this.searchField.setEditable(true);
 
         return group;
       }
 
       Milieu parent = milieu.parent();
-      if(isPlayerAccessoriesRootSetting(parent) && lastFilter != null && !isPlayerAccessoriesRootSetting(lastFilter.parent())) {
-        lastFilter = null;
+      if(isPlayerAccessoriesRootSetting(parent) && this.lastFilter != null && !isPlayerAccessoriesRootSetting(this.lastFilter.parent())) {
+        this.lastFilter = null;
 
-        searchField.setEditable(true);
+        this.searchField.setEditable(true);
         return group;
       }
 
-      if(lastFilter == null && !isPlayerAccessoriesRootSetting(milieu)) {
-        lastFilter = milieu;
-        searchField.setEditable(false);
-      } else if(lastFilter != null && milieu == lastFilter.parent()) {
-        lastFilter = null;
-        searchField.setEditable(true);
+      if(this.lastFilter == null && !isPlayerAccessoriesRootSetting(milieu)) {
+        this.lastFilter = milieu;
+        this.searchField.setEditable(false);
+      } else if(this.lastFilter != null && milieu == this.lastFilter.parent()) {
+        this.lastFilter = null;
+        this.searchField.setEditable(true);
 
         return group;
       }
 
-      searchField.setEditable(false);
+      this.searchField.setEditable(false);
       return milieu;
     });
 
@@ -256,7 +255,7 @@ public class MilieuActivity extends AbstractSidebarActivity {
     content.addId("content");
 
     HorizontalListWidget header = new HorizontalListWidget();
-    header.addId("header-milieu");
+    header.addId("milieu-header");
 
     ComponentWidget title = ComponentWidget.text(query);
     title.addId("title");
@@ -267,10 +266,7 @@ public class MilieuActivity extends AbstractSidebarActivity {
     DivWidget infoWrapper = new DivWidget();
     infoWrapper.addId("wrapper-info");
 
-    ComponentWidget info = ComponentWidget.component(
-        Component.translatable("player-accessories.ui.milieus.search." + translationKey)
-    );
-
+    ComponentWidget info = ComponentWidget.component(Component.translatable("player-accessories.ui.milieus.search." + translationKey));
     info.addId("info");
 
     infoWrapper.addChild(info);
