@@ -1,6 +1,7 @@
 package eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types;
 
-import eu.epycsolutions.labyaddon.playeraccessories.api.generated.ReferenceStorage;
+import eu.epycsolutions.labyaddon.playeraccessories.Accessories;
+import eu.epycsolutions.labyaddon.playeraccessories.AccessoriesAPI;
 import eu.epycsolutions.labyaddon.playeraccessories.environ.EnvironConfig;
 import eu.epycsolutions.labyaddon.playeraccessories.environ.EnvironService;
 import org.jetbrains.annotations.ApiStatus.Internal;
@@ -23,33 +24,35 @@ public class RootMilieuRegistry extends AbstractMilieuRegistry {
   }
 
   public boolean isEnviron() {
-    return !this.namespace.equals("player-accessories");
+    return !this.namespace.equals(AccessoriesAPI.ADDON_MAIN_NAMESPACE);
   }
 
   public String getNamespace() {
     return this.namespace;
   }
 
+  @Override
   public String getTranslationId() {
     return this.translationId;
   }
 
-  public static <T extends EnvironConfig> RootMilieuRegistry environ(String namespace, T config) {
-    ReferenceStorage referenceStorage = new ReferenceStorage();
-    EnvironService environService = referenceStorage.environService();
+  public static <T extends EnvironConfig> RootMilieuRegistry environ(Object namespace, T config) {
+    AccessoriesAPI accessoriesAPI = Accessories.accessoriesAPI();
+    EnvironService environService = accessoriesAPI.environService();
 
-    if(environService.hasConfiguration(namespace)) throw new UnsupportedOperationException("Environ already has a main configuration");
+    if(environService.hasMainConfiguration((String) namespace)) throw new UnsupportedOperationException("Environ already has a main configuration");
 
-    RootMilieuRegistry milieuRegistry = (new RootMilieuRegistry(namespace, namespace)).translationId("settings");
+    RootMilieuRegistry milieuRegistry = (new RootMilieuRegistry((String) namespace,
+        (String) namespace)).translationId("settings");
     milieuRegistry.addMilieus(config);
-    environService.registerConfiguration(namespace, config);
+    environService.registerMainConfiguration((String) namespace, config);
 
     return milieuRegistry;
   }
 
   @Internal
   public static RootMilieuRegistry playerAccessories(String id) {
-    return new RootMilieuRegistry("player-accessories", id);
+    return new RootMilieuRegistry(AccessoriesAPI.ADDON_MAIN_NAMESPACE, id);
   }
 
   @Internal
@@ -57,6 +60,7 @@ public class RootMilieuRegistry extends AbstractMilieuRegistry {
     return new RootMilieuRegistry(namespace, id);
   }
 
+  @Override
   public String getTranslationKey() {
     return this.namespace + ".ui.milieus." + this.namespace;
   }
