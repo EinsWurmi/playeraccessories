@@ -11,6 +11,8 @@ import net.labymod.api.reference.annotation.Referenceable;
 @Referenceable
 public interface AccessoriesAPI {
 
+  String ADDON_MAIN_NAMESPACE = "player-accessories";
+
   LabyAPI labyAPI();
 
   EnvironService environService();
