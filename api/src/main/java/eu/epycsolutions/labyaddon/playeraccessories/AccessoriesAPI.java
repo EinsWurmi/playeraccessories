@@ -2,6 +2,7 @@ package eu.epycsolutions.labyaddon.playeraccessories;
 
 import eu.epycsolutions.labyaddon.playeraccessories.api.generated.ReferenceStorage;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.accessories.AccessoriesConfig;
+import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.Milieu;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.AbstractMilieuRegistry;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.widget.WidgetRegistry;
 import eu.epycsolutions.labyaddon.playeraccessories.environ.EnvironService;
@@ -24,5 +25,7 @@ public interface AccessoriesAPI {
   AbstractMilieuRegistry coreMilieuRegistry();
 
   WidgetRegistry widgetRegistry();
+
+  void showMilieu(Milieu milieu);
 
 }

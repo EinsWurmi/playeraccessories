@@ -5,17 +5,23 @@ import eu.epycsolutions.labyaddon.playeraccessories.configuration.AccessoriesCon
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.accessories.AccessoriesConfig;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.laby.PlayerAccessoriesConfig;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.ConfigProvider;
+import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.Milieu;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.AbstractMilieuRegistry;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.RootMilieuRegistry;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.widget.WidgetRegistry;
+import eu.epycsolutions.labyaddon.playeraccessories.core.generated.DefaultReferenceStorage;
+import eu.epycsolutions.labyaddon.playeraccessories.environ.DefaultEnvironService;
 import eu.epycsolutions.labyaddon.playeraccessories.environ.EnvironService;
 import eu.epycsolutions.labyaddon.playeraccessories.events.config.ConfigurationSaveEvent;
 import eu.epycsolutions.labyaddon.playeraccessories.gui.navigation.elements.AccessoriesNavigationElement;
+import eu.epycsolutions.labyaddon.playeraccessories.gui.screen.activity.activitys.playeraccessories.PlayerAccessoriesActivity;
+import eu.epycsolutions.labyaddon.playeraccessories.gui.screen.activity.activitys.playeraccessories.child.MilieuActivity;
+import net.labymod.api.Laby;
 import net.labymod.api.addon.LabyAddon;
 import net.labymod.api.client.gui.navigation.NavigationRegistry;
-import net.labymod.api.event.EventBus;
+import net.labymod.api.client.gui.navigation.elements.ScreenNavigationElement;
 import net.labymod.api.event.Subscribe;
-import net.labymod.api.event.client.scoreboard.TabListUpdateEvent;
+import net.labymod.api.event.client.gui.screen.playerlist.PlayerListUpdateEvent;
 import net.labymod.api.models.Implements;
 import net.labymod.api.models.addon.annotation.AddonMain;
 import javax.inject.Inject;
@@ -28,12 +34,9 @@ public class PlayerAccessories extends LabyAddon<PlayerAccessoriesConfig> implem
 
   private static AccessoriesAPI instance;
 
-  private EventBus eventBus;
   private final AbstractMilieuRegistry coreMilieuRegistry = RootMilieuRegistry.playerAccessories("settings").holdable(false);
 
   private ConfigProvider<AccessoriesConfig> accessoriesConfig;
-
-  private EnvironService environService;
 
   private WidgetRegistry widgetRegistry;
 
@@ -44,8 +47,8 @@ public class PlayerAccessories extends LabyAddon<PlayerAccessoriesConfig> implem
 
   @Override
   protected void enable() {
-    this.coreMilieuRegistry.addMilieus(this.accessoriesConfig.get());
-
+    // DISABLED CAUSE OF CRASH FROM CREATING CONFIG
+    // this.coreMilieuRegistry.addMilieus(this.accessoriesConfig.get());
     this.coreMilieuRegistry.initialize();
 
     // Registry Services
@@ -59,7 +62,8 @@ public class PlayerAccessories extends LabyAddon<PlayerAccessoriesConfig> implem
 
     Accessories.setInitialized(this.referenceStorage());
 
-    this.environService = referenceStorage().environService();
+    ((DefaultEnvironService) environService()).enableEnvirons();
+
 
     this.widgetRegistry = referenceStorage().widgetRegistry();
 
@@ -74,7 +78,7 @@ public class PlayerAccessories extends LabyAddon<PlayerAccessoriesConfig> implem
   }
 
   public void reloadTabList() {
-    labyAPI().eventBus().fire(new TabListUpdateEvent());
+    labyAPI().eventBus().fire(new PlayerListUpdateEvent());
   }
 
   @Override
@@ -104,12 +108,32 @@ public class PlayerAccessories extends LabyAddon<PlayerAccessoriesConfig> implem
 
   @Override
   public EnvironService environService() {
-    return this.environService;
+    return DefaultEnvironService.getInstance();
   }
 
   @Override
   public WidgetRegistry widgetRegistry() {
     return this.widgetRegistry;
+  }
+
+  @Override
+  public void showMilieu(Milieu milieu) {
+    NavigationRegistry navigationRegistry = labyAPI().navigationService();
+    ScreenNavigationElement navigationElement = (ScreenNavigationElement) navigationRegistry.getById("player-accessories");
+
+    PlayerAccessoriesActivity playerAccessoriesActivity = (PlayerAccessoriesActivity) navigationElement.getScreen();
+    MilieuActivity milieuActivity = (MilieuActivity) playerAccessoriesActivity.switchTab("milieus");
+
+    if(milieuActivity != null) {
+      if(!milieu.isInitialized()) milieu.initialize();
+      milieuActivity.setSelectedMilieu(milieu);
+    }
+
+    Laby.labyAPI().minecraft().minecraftWindow().displayScreen(playerAccessoriesActivity);
+  }
+
+  public static DefaultReferenceStorage references() {
+    return (DefaultReferenceStorage) Accessories.references();
   }
 
 }
