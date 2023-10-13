@@ -20,7 +20,7 @@ public class Constants {
     public static final Path ENVIRON_MILIEUS = PLAYERACCESSORIES_ADDON_CONFIG.resolve("milieus");
 
     // Addon files
-    public static final Path ENVIRONS_INDEX = DATA_CACHE.resolve("environs-index.json");
+    public static final Path ENVIRONS_INDEX = DATA_CACHE.resolve("environs.json");
     public static final Path ENVIRONS_SCHEDULED_FOR_REMOVAL = PLAYERACCESSORIES_ADDON_CONFIG.resolve(".envifr");
   }
 
@@ -47,6 +47,9 @@ public class Constants {
 
     public static final String LABYNET_SKIN_BASE = net.labymod.api.Constants.Urls.SKIN_LABYNET_BASE;
     public static final String LABYNET_TEXTURE_BASE = net.labymod.api.Constants.Urls.TEXTURE_LABYNET_BASE;
+
+    public static final String PLAYER_ACCESSORIES_API_BASE = "http://localhost:3000/v3"; /// CURRENTLY BY LOCALHOST FOR TESTING ADDON!
+    public static final String ENVIRON_SERVICE_BACKEND = PLAYER_ACCESSORIES_API_BASE + "/environs";
   }
 
   @Deprecated
