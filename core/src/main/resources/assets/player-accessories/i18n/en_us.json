@@ -2,7 +2,7 @@
   "player-accessories": {
     "ui": {
       "navigation": {
-        "player-accessories": "PlayerAccessories"
+        "milieus": "Milieus"
       },
       "textfield": {
         "search": "Search..."
