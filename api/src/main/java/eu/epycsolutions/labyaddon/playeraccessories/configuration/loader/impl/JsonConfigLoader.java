@@ -7,13 +7,17 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.expections.ConfigLoadException;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.expections.ConfigSaveException;
+import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.Config;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.ConfigAccessor;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.annotation.Exclude;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.property.ConfigProperty;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.property.ConfigPropertyTypeAdapter;
+import eu.epycsolutions.labyaddon.playeraccessories.events.config.ConfigurationLoadEvent;
+import eu.epycsolutions.labyaddon.playeraccessories.events.config.ConfigurationVersionUpdateEvent;
 import eu.epycsolutions.labyaddon.playeraccessories.events.config.JsonConfigLoaderInitializeEvent;
 import net.labymod.api.Laby;
 import net.labymod.api.util.io.IOUtil;
+import net.labymod.api.util.logging.Logging;
 import net.labymod.api.util.reflection.Reflection;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -26,6 +30,8 @@ import java.util.List;
 
 public class JsonConfigLoader extends AbstractConfigLoader {
 
+  private static final Logging LOGGER = Logging.create(JsonConfigLoader.class);
+  private static final String CONFIG_VERSION_KEY = "configVersion";
   private final Gson gson;
 
   public JsonConfigLoader(Path directory) {
@@ -47,39 +53,42 @@ public class JsonConfigLoader extends AbstractConfigLoader {
 
     try {
       if(IOUtil.exists(path)) {
-        BufferedReader reader = Files.newBufferedReader(path);
+        try(BufferedReader reader = Files.newBufferedReader(path)) {
+          JsonObject jsonObject = gson.fromJson(reader, JsonObject.class);
+          JsonObject converted;
 
-        try {
-          JsonObject jsonObject = this.gson.fromJson(reader, JsonObject.class);
-          JsonObject converted = getConvertedConfigJson(clazz, jsonObject);
-
-          ConfigAccessor configAccessor = this.gson.fromJson(converted, clazz);
-          T t = (T)((configAccessor == null) ? loadConfig(clazz) : configAccessor);
-
-          if(reader != null) reader.close();
-          return t;
-        } catch(Throwable throwable) {
           try {
-            reader.close();
-          } catch(Throwable throwable1) {
-            throwable.addSuppressed(throwable1);
+            converted = getConvertedConfigJson(clazz, jsonObject);
+          } catch(Exception exception) {
+            LOGGER.error("Failed to check version of " + clazz.getName(), exception);
+            converted = jsonObject;
           }
 
-          throw throwable;
-        }
-      }
+          T config = gson.fromJson(converted, clazz);
+          if(config == null) config = loadConfig(clazz);
 
-      return loadConfig(clazz);
+          return config;
+        }
+      } else {
+        return loadConfig(clazz);
+      }
     } catch(Exception exception) {
       throw new ConfigLoadException(clazz, exception);
     }
   }
 
-  private <T extends ConfigAccessor> JsonObject getConvertedConfigJson(Class<T> clazz, JsonObject jsonObject) {
-    Reflection.getFields(clazz, false, (member) -> {
-      if(member.isAnnotationPresent(Exclude.class) || !jsonObject.has(member.getName())) return;
-      JsonElement jsonElement = jsonObject.get(member.getName());
+  private <T extends ConfigAccessor> JsonObject getConvertedConfigJson(
+      Class<T> clazz,
+      JsonObject jsonObject
+  ) {
+    Laby.fireEvent(new ConfigurationLoadEvent(clazz, jsonObject));
 
+    Reflection.getFields(clazz, false, (member) -> {
+      if(member.isAnnotationPresent(Exclude.class) || !jsonObject.has(member.getName())) {
+        return;
+      }
+
+      JsonElement jsonElement = jsonObject.get(member.getName());
       if(!jsonElement.isJsonObject() || !ConfigAccessor.class.isAssignableFrom(member.getType())) {
         Class<?> type = member.getType();
         Type genericType = member.getGenericType();
@@ -87,16 +96,15 @@ public class JsonConfigLoader extends AbstractConfigLoader {
         if(ConfigProperty.class.isAssignableFrom(type) && genericType instanceof ParameterizedType parameterizedType) {
           Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
           for(Type actualTypeArgument : actualTypeArguments) {
-            if(actualTypeArgument instanceof Class) {
-              type = (Class) actualTypeArgument;
+            if (actualTypeArgument instanceof Class) {
+              type = (Class<?>) actualTypeArgument;
               genericType = type;
-              break;
-            }
 
-            if(actualTypeArgument instanceof ParameterizedType) {
-              ParameterizedType subType = (ParameterizedType) actualTypeArgument;
-              type = (Class) subType.getRawType();
+              break;
+            } else if (actualTypeArgument instanceof ParameterizedType subType) {
+              type = (Class<?>) subType.getRawType();
               genericType = subType;
+
               break;
             }
           }
@@ -104,14 +112,14 @@ public class JsonConfigLoader extends AbstractConfigLoader {
 
         if(jsonElement.isJsonArray() && List.class.isAssignableFrom(type)) {
           Class<? extends ConfigAccessor> accessorClass = null;
-
-          if(genericType instanceof ParameterizedType) {
-            ParameterizedType parameterizedType = (ParameterizedType) genericType;
+          if(genericType instanceof ParameterizedType parameterizedType) {
             Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
-
-            if(actualTypeArguments.length != 0 && actualTypeArguments[0] instanceof Class) {
-              Class<?> genericClass = (Class) actualTypeArguments[0];
-              if(ConfigAccessor.class.isAssignableFrom(genericClass)) accessorClass = (Class) genericClass;
+            if(
+                actualTypeArguments.length != 0 &&
+                actualTypeArguments[0] instanceof Class<?> genericClass &&
+                (ConfigAccessor.class.isAssignableFrom(genericClass))
+            ) {
+              accessorClass = (Class<? extends ConfigAccessor>) genericClass;
             }
           }
 
@@ -119,11 +127,24 @@ public class JsonConfigLoader extends AbstractConfigLoader {
             JsonArray newArray = new JsonArray();
             for(JsonElement element : jsonElement.getAsJsonArray()) {
               if(element.isJsonObject()) {
-                newArray.add(getConvertedConfigJson(accessorClass, element.getAsJsonObject()));
-                continue;
-              }
+                JsonObject convertedConfigurationJson;
 
-              return;
+                try {
+                  convertedConfigurationJson = getConvertedConfigJson(accessorClass, element.getAsJsonObject());
+                } catch(Exception exception) {
+                  LOGGER.error(
+                      "Failed to check version of sub configuration of " + member.getName() +
+                          " (" + clazz.getName() + ")",
+                      exception
+                  );
+
+                  convertedConfigurationJson = element.getAsJsonObject();
+                }
+
+                newArray.add(convertedConfigurationJson);
+              } else {
+                return;
+              }
             }
 
             jsonObject.add(member.getName(), newArray);
@@ -135,9 +156,69 @@ public class JsonConfigLoader extends AbstractConfigLoader {
         return;
       }
 
-      Class<? extends ConfigAccessor> configAccessorClass = (Class) member.getType();
-      jsonObject.add(member.getName(), getConvertedConfigJson(configAccessorClass, jsonElement.getAsJsonObject()));
+      Class<? extends ConfigAccessor> configAccessorClass = (Class<? extends ConfigAccessor>) member.getType();
+      JsonObject convertedConfigurationJson;
+
+      try {
+        convertedConfigurationJson = getConvertedConfigJson(configAccessorClass, jsonElement.getAsJsonObject());
+      } catch(Exception exception) {
+        LOGGER.error(
+            "Failed to check version of " + member.getName() +
+                " (" + clazz.getName() + ")"
+        );
+
+        convertedConfigurationJson = jsonElement.getAsJsonObject();
+      }
+
+      jsonObject.add(member.getName(), convertedConfigurationJson);
     });
+
+    if(!Config.class.isAssignableFrom(clazz)) {
+      return jsonObject;
+    }
+
+    Class<? extends Config> configClass = (Class<? extends Config>) clazz;
+    Config config;
+
+    try {
+      config = createInstance(configClass);
+    } catch(ReflectiveOperationException exception) {
+      return jsonObject;
+    }
+
+    int configVersion = config.getConfigVersion();
+    int usedConfigVersion;
+
+    if(
+        jsonObject.has(CONFIG_VERSION_KEY) &&
+        jsonObject.get(CONFIG_VERSION_KEY).isJsonPrimitive() &&
+        jsonObject.get(CONFIG_VERSION_KEY).getAsJsonPrimitive().isNumber()
+    ) {
+      usedConfigVersion = jsonObject.get(CONFIG_VERSION_KEY).getAsInt();
+    } else {
+      usedConfigVersion = -1;
+    }
+
+    if(configVersion > usedConfigVersion) {
+      ConfigurationVersionUpdateEvent configVersionUpdateEvent = Laby.fireEvent(
+          new ConfigurationVersionUpdateEvent(
+              configClass,
+              jsonObject,
+              usedConfigVersion,
+              configVersion
+          )
+      );
+
+      JsonObject editedJsonObject = configVersionUpdateEvent.getEditedJsonObject();
+      if(editedJsonObject != null) {
+        editedJsonObject.addProperty(CONFIG_VERSION_KEY, configVersion);
+        return editedJsonObject;
+      }
+
+      if(usedConfigVersion == -1) {
+        jsonObject.addProperty(CONFIG_VERSION_KEY, configVersion);
+      }
+    }
 
     return jsonObject;
   }
@@ -162,20 +243,12 @@ public class JsonConfigLoader extends AbstractConfigLoader {
     Path parent = path.getParent();
 
     try {
-      if(!IOUtil.exists(parent)) IOUtil.createDirectories(parent);
-      BufferedWriter writer = Files.newBufferedWriter(path);
+      if(!IOUtil.exists(parent)) {
+        IOUtil.createDirectories(parent);
+      }
 
-      try {
-        this.gson.toJson(config, writer);
-        if(writer != null) writer.close();
-      } catch(Throwable throwable) {
-        try {
-          writer.close();
-        } catch(Throwable throwable1) {
-          throwable.addSuppressed(throwable1);
-        }
-
-        throw throwable;
+      try(BufferedWriter writer = Files.newBufferedWriter(path)) {
+        gson.toJson(config, writer);
       }
     } catch(Exception exception) {
       throw new ConfigSaveException(config, exception);

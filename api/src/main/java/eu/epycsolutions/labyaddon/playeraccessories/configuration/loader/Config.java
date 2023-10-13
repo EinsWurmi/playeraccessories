@@ -77,6 +77,11 @@ public class Config implements ConfigAccessor {
   private static final Logging LOGGER = Logging.create(Config.class);
 
   @Exclude
+  private final ConfigProperty<Integer> configVersion = new ConfigProperty<>(
+      getConfigVersion()
+  );
+
+  @Exclude
   private Map<String, String> configMeta;
 
   public void reset() {
@@ -84,6 +89,21 @@ public class Config implements ConfigAccessor {
       milieu.initialize();
       milieu.reset();
     }
+  }
+
+  /**
+   * This Method is an idea by LabyMod, it gives the version of the config
+   * @return the ConfigProperty of the config version the user currently uses.
+   */
+  public ConfigProperty<Integer> usesConfigVersion() {
+    return this.configVersion;
+  }
+
+  /**
+   * @return the current intended config version.
+   */
+  public int getConfigVersion() {
+    return 1;
   }
 
   @Override
