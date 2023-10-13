@@ -1,0 +1,342 @@
+.content {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    .milieu-header {
+        width: 100%;
+        height: 20;
+
+        left: 0;
+        top: 0;
+
+        margin: 9 1 1 1;
+
+        space-between-entries: 3;
+
+        Button {
+            width: 12;
+            height: 20;
+
+            left: 0;
+            top: 0;
+        }
+
+        .button-back {
+            Icon {
+                width: 8;
+                height: width;
+
+                left: 0;
+                top: 0;
+            }
+        }
+
+        .title {
+            width: fit-content;
+            max-width: 100%;
+            height: fit-content;
+
+            left: 0;
+            top: 0;
+        }
+    }
+
+    .environ-activity-renderer {
+        left: 0;
+        top: 22;
+        right: 0;
+        bottom: 0;
+
+        stencil: true;
+    }
+
+    Scroll {
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+
+        scroll-speed: 28;
+        stencil: true;
+
+        padding-bottom: 5;
+
+        Scrollbar {
+            width: 5;
+            height: 100%;
+
+            left: 0;
+            top: 0;
+
+            margin-left: 5;
+        }
+
+        .list {
+            height: fit-content;
+            space-between-entries: 3;
+        }
+    }
+
+    .header-spacing {
+        top: 22;
+    }
+}
+
+Milieu {
+    width: 100%;
+    height: fit-content;
+    min-height: 24;
+
+    background-color: rgba(250, 250, 250, 30);
+
+    orientation: horizontal;
+
+    &:not(:enabled) {
+        interactable: false;
+        pressable: false;
+        
+        opacity: .4;
+
+        Swap {
+            text-hover-color: null;
+        }
+    }
+
+    .status-indicator {
+        width: 2;
+        height: 100%;
+
+        background-color: rgba(90, 90, 90, 110);
+    }
+
+    .status-enabled {
+        background-color: rgba(24, 167, 13, 255);
+    }
+
+    .status-disabled {
+        background-color: rgba(120, 0, 0, 255);
+    }
+
+    .milieu-content {
+        height: fit-content;
+        min-height: 24;
+
+        left: 0;
+        top: 0;
+        right: 0;
+
+        orientation: horizontal;
+
+        padding-left: 4;
+        padding-right: 3;
+
+        space-between-entries: 1;
+        hover-box-delay: 500;
+
+        .display-name {
+            padding-top: 2;
+            padding-bottom: 2;
+
+            alignment-y: center;
+        }
+
+        .permission-warning {
+            width: 8;
+            height: 16;
+
+            alignment-y: center;
+            icon: "exclamation-mark-dark";
+
+            margin-right: 4;
+
+            &:hover {
+                icon: "exclamation-mark-light";
+            }
+        }
+
+        .milieu-icon {
+            width: 16;
+            height: width;
+
+            alignment-y: center;
+
+            margin-right: 3;
+        }
+        
+        .header-title {
+            width: 100%;
+
+            left: 0;
+            top: 0;
+
+            background-color: rgba(0, 0, 0, 0);
+        }
+
+        .input-wrapper, .advanced-button, .advanced-control-button {
+            margin-top: 3;
+            margin-bottom: 3;
+
+            alignment-y: center;
+        }
+
+        .input-wrapper {
+            width: fit-content;
+            height: fit-content;
+            min-height: 10;
+
+            orientation: horizontal;
+            alignment: right;
+
+            space-between-entries: 3;
+
+            .input-widget {
+                max-width: 100;
+
+                right: 0;
+                top: 0;
+
+                alignment: right;
+            }
+
+            Button.input-widget {
+                padding: 0 5 0 5;
+            }
+
+            ColorPicker {
+                max-width: 50;
+                max-height: 18;
+            }
+
+            ActivityMilieu {
+                min-width: 20;
+                min-height: 20;
+
+                Icon {
+                    height: 16;
+                    width: 16;
+                    
+                    alignment-y: center;
+                }
+
+                Component {
+                    margin-left: 4;
+                    margin-right: 4;
+                }
+            }
+        }
+
+        .advanced-button {
+            width: 12;
+        }
+    }
+
+    .extended-content {
+        width: 100%;
+        height: fit-content;
+    }
+
+    .extended-input-wiget {
+        width: 100%;
+
+        margin-top: -2;
+        margin-left: 3;
+        margin-right: 3;
+        margin-bottom: 3;
+    }
+
+    .permission-disabled {
+        left: 0;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        
+        ignore-bound: true;
+
+        alignment-x: left;
+        alignment-y: top;
+
+        background-color: rgba(0, 0, 0, 230);
+        priority-layer: very_layer;
+
+        .text {
+            left: 5;
+            top: 50%;
+
+            alignment-y: center;
+        }
+    }
+}
+
+MilieuHeader {
+    width: 100%;
+    height: fit-content;
+
+    top: 0;
+
+    .title-header {
+        width: 100%;
+
+        left: 0;
+        top: 0;
+        
+        background-color: rgba(0, 0, 0, 0);
+    }
+
+    &.header-single {
+        margin: 6 0 1 0;
+    }
+
+    &.header-first {
+        margin: 6 0 0 0;
+    }
+
+    &.header-last {
+        margin: 0 0 1 0;
+    }
+
+    &.header-left {
+        .title-header {
+            left: 0;
+        }
+    }
+
+    &.header-center {
+        .title-header {
+            left: 50%;
+            alignment-x: center;
+        }
+    }
+}
+
+.advanced-control-button {
+    width: 50;
+    height: 20;
+}
+
+.foreground-button {
+    height: 0;
+}
+
+.report-bug-button {
+    width: 100%;
+
+    left: 0;
+    bottom: 0;
+}
+
+.info-wrapper {
+    .info {
+        width: fit-content;
+        max-width: 80%;
+
+        left: 50%;
+        top: 10%;
+
+        alignment-x: center;
+        alignment-y: center;
+
+        text-color: gray;
+    }
+}

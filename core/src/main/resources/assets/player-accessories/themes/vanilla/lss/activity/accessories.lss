@@ -1,0 +1,4 @@
+.tabbed-activity {
+    renderer: "DirtBackground";
+    box-shadow: classic top bottom;
+}
