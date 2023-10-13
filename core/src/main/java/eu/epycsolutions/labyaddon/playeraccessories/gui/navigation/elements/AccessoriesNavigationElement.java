@@ -18,7 +18,7 @@ public class AccessoriesNavigationElement extends ScreenNavigationElement {
 
   @Override
   public Component getDisplayName() {
-    return Component.translatable("player-accessories.ui.navigation.player-accessories");
+    return Component.text("PlayerAccessories");
   }
 
   @Override

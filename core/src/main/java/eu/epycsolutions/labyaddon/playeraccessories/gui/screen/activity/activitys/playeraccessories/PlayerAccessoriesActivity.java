@@ -3,6 +3,7 @@ package eu.epycsolutions.labyaddon.playeraccessories.gui.screen.activity.activit
 import eu.epycsolutions.labyaddon.playeraccessories.PlayerAccessories;
 import eu.epycsolutions.labyaddon.playeraccessories.gui.screen.activity.activitys.playeraccessories.child.EnvironsActivity;
 import eu.epycsolutions.labyaddon.playeraccessories.gui.screen.activity.activitys.playeraccessories.child.MilieuActivity;
+import net.labymod.api.client.component.Component;
 import net.labymod.api.client.gui.screen.activity.AutoActivity;
 import net.labymod.api.client.gui.screen.activity.Link;
 import net.labymod.api.client.gui.screen.activity.Links;
@@ -16,7 +17,10 @@ public class PlayerAccessoriesActivity extends TabbedActivity {
   public PlayerAccessoriesActivity() {
     register(
         "milieus",
-        new DefaultComponentTab("PlayerAccessories", new MilieuActivity(PlayerAccessories.instance().coreMilieuRegistry()))
+        new DefaultComponentTab(
+            Component.translatable("player-accessories.ui.navigation.milieus"),
+            new MilieuActivity(PlayerAccessories.instance().coreMilieuRegistry())
+        )
     );
 
     register("environs", new DefaultComponentTab("Environs", EnvironsActivity::new));
