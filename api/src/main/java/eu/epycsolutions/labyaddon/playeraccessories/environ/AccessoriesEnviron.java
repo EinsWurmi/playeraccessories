@@ -10,12 +10,16 @@ import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.ConfigP
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.impl.JsonConfigLoader;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.types.RootMilieuRegistry;
 import eu.epycsolutions.labyaddon.playeraccessories.environ.exception.EnvironInvalidException;
+import eu.epycsolutions.labyaddon.playeraccessories.events.config.ConfigurationSaveEvent;
+import eu.epycsolutions.labyaddon.playeraccessories.events.environ.lifecycle.EnvironEnableEvent;
+import eu.epycsolutions.labyaddon.playeraccessories.events.environ.lifecycle.EnvironPostEnableEvent;
 import eu.epycsolutions.labyaddon.playeraccessories.model.environ.info.InstalledEnvironInfo;
 import net.labymod.api.Laby;
 import net.labymod.api.LabyAPI;
 import net.labymod.api.client.chat.command.Command;
 import net.labymod.api.client.component.Component;
 import net.labymod.api.configuration.converter.LegacyConverter;
+import net.labymod.api.event.Subscribe;
 import net.labymod.api.util.logging.Logging;
 import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
@@ -157,16 +161,42 @@ public abstract class AccessoriesEnviron<T extends EnvironConfig> {
   }
 
 
+  @Subscribe
+  public final void onEnvironLoad(EnvironEnableEvent event) {
+    this.loadedInRuntime = this.labyAPI.isFullyInitialized();
+    this.environInfo = event.environ().info();
+
+    this.instance = (AccessoriesEnviron<T>) event.instance();
+
+    try {
+      load();
+    } catch(Exception exception) {
+      environException("Failed to load the environ.", exception);
+    }
+  }
+
+  @Subscribe
+  public final void onEnvironInitialize(EnvironPostEnableEvent event) {
+    try {
+      enable();
+    } catch(Exception exception) {
+      environException("Failed to enable the environ.", exception);
+    }
+  }
+
+  @Subscribe
+  public final void onEnvironMilieusSave(ConfigurationSaveEvent event) {
+    saveConfiguration();
+  }
+
+
   private void environExceptionMessage(String message, Object... arguments) {
     message = String.format(message, arguments);
     environException(message, new EnvironInvalidException(message));
   }
 
   private void environException(String message, Exception exception) throws RuntimeException {
-    if(
-        this.labyAPI.labyModLoader().isAddonDevelopmentEnvironment() &&
-        (this.environInfo == null || this.environInfo.getNamespace().equals(this.accessoriesAPI.environService().getClassPathEnviron()))
-    ) {
+    if(this.labyAPI.labyModLoader().isAddonDevelopmentEnvironment() && this.environInfo == null) {
       this.labyAPI.minecraft().crashGame(message, exception);
       return;
     }
