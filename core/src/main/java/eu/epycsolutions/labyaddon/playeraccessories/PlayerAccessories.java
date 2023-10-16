@@ -47,8 +47,7 @@ public class PlayerAccessories extends LabyAddon<PlayerAccessoriesConfig> implem
 
   @Override
   protected void enable() {
-    // DISABLED CAUSE OF CRASH FROM CREATING CONFIG
-    // this.coreMilieuRegistry.addMilieus(this.accessoriesConfig.get());
+    this.coreMilieuRegistry.addMilieus(this.accessoriesConfig.get());
     this.coreMilieuRegistry.initialize();
 
     // Registry Services
