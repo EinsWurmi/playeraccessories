@@ -16,6 +16,6 @@ public interface AccessoriesConfig extends ConfigAccessor {
 
   OtherConfig other();
 
-  Map<String, LoadedEnviron> enabledEnvirons();
+  // Map<String, LoadedEnviron> enabledEnvirons();
 
 }
