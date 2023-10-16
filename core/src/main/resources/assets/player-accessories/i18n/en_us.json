@@ -2,12 +2,17 @@
   "player-accessories": {
     "ui": {
       "navigation": {
-        "milieus": "Milieus"
+        "milieus": "Milieus",
+        "playground": "Playground"
       },
       "textfield": {
         "search": "Search..."
       },
       "milieus": {
+        "search": {
+          "tooShort": "Please search for at least two characters.",
+          "noResults": "Seems there are no milieus with your search?"
+        },
         "player-accessories": {
           "ingame": {
             "name": "Ingame"
