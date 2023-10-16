@@ -102,18 +102,33 @@ public class MilieuContentActivity extends Activity {
       boolean hasParent = (this.currentMilieuHolder.hasParent() && currentMilieuHolder.parent().isHoldable());
       if(this.closeHandler != null || hasParent || (!isOriginHolder() && isOriginFiltered())) {
         ButtonWidget backButton = ButtonWidget.icon(Icon.sprite8(SpriteCommon.TEXTURE, 4, 4));
+                 
         backButton.addId("button-back");
-        if(this.currentMilieuHolder == this.originMilieuHolder) backButton.addId("button-back-origin");
-        if(this.currentMilieuHolder.hasParent() && this.currentMilieuHolder.parent() instanceof ListMilieu) backButton.addId("button-back-list-entry");
+        if(this.currentMilieuHolder == this.originMilieuHolder) {
+          backButton.addId("button-back-origin");
+        }
+                
+        if(this.currentMilieuHolder.hasParent() && this.currentMilieuHolder.parent() instanceof ListMilieu) {
+          backButton.addId("button-back-list-entry");
+        }
+   
         backButton.setPressable(() -> {
-          if(hasParent) this.currentMilieuHolder = this.currentMilieuHolder.parent();
-          else {
+          if(hasParent) {
+            this.currentMilieuHolder = this.currentMilieuHolder.parent();
+          } else {
             this.currentMilieuHolder = this.originMilieuHolder;
-            if(this.closeHandler != null) this.closeHandler.run();
+            if(this.closeHandler != null) {
+              this.closeHandler.run();
+            }
           }
 
-          if(this.screenCallback != null) this.currentMilieuHolder = this.screenCallback.apply(this.currentMilieuHolder);
-          if(this.currentMilieuHolder != null) reload();
+          if(this.screenCallback != null) {
+            this.currentMilieuHolder = this.screenCallback.apply(this.currentMilieuHolder);
+          }
+
+          if(this.currentMilieuHolder != null) {
+            reload();
+          }
         });
 
         header.addEntry(backButton);
@@ -206,8 +221,7 @@ public class MilieuContentActivity extends Activity {
         if(!milieuElement.hasControlButton() && milieuElement.getWidgets() == null) continue;
       }
 
-      if(milieu instanceof MilieuHeader) {
-        MilieuHeader milieuHeader = (MilieuHeader) milieu;
+      if(milieu instanceof MilieuHeader milieuHeader) {
         List<Component> rows = milieuHeader.getRows();
 
         for(int i = 0; i < rows.size(); i++) {
@@ -266,7 +280,7 @@ public class MilieuContentActivity extends Activity {
   }
 
   private boolean isOriginHolder() {
-    return this.currentMilieuHolder == this.originMilieuHolder;
+    return (this.currentMilieuHolder == this.originMilieuHolder);
   }
 
   private Milieu getCurrentHolder() {
