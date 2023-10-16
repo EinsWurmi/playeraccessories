@@ -1,5 +1,6 @@
 package eu.epycsolutions.labyaddon.playeraccessories.gui.screen.activity.activitys.playeraccessories.child;
 
+import eu.epycsolutions.labyaddon.playeraccessories.AccessoriesAPI;
 import eu.epycsolutions.labyaddon.playeraccessories.PlayerAccessories;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.Milieu;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.milieu.MilieuGroup;
@@ -90,7 +91,8 @@ public class MilieuActivity extends AbstractSidebarActivity {
 
     categoryList.addChild(environHr);
     categoryList.addChild(
-        ComponentWidget.i18n("player-accessories.ui.milieus.environs.name").addId("category-sub"));
+        ComponentWidget.i18n("player-accessories.ui.milieus.environs.name").addId("category-sub")
+    );
   }
 
   @Override
@@ -185,14 +187,14 @@ public class MilieuActivity extends AbstractSidebarActivity {
       }
 
       Milieu parent = milieu.parent();
-      if(isPlayerAccessoriesRootSetting(parent) && this.lastFilter != null && !isPlayerAccessoriesRootSetting(this.lastFilter.parent())) {
+      if(isPlayerAccessoriesRootMilieu(parent) && this.lastFilter != null && !isPlayerAccessoriesRootMilieu(this.lastFilter.parent())) {
         this.lastFilter = null;
 
         this.searchField.setEditable(true);
         return group;
       }
 
-      if(this.lastFilter == null && !isPlayerAccessoriesRootSetting(milieu)) {
+      if(this.lastFilter == null && !isPlayerAccessoriesRootMilieu(milieu)) {
         this.lastFilter = milieu;
         this.searchField.setEditable(false);
       } else if(this.lastFilter != null && milieu == this.lastFilter.parent()) {
@@ -210,9 +212,9 @@ public class MilieuActivity extends AbstractSidebarActivity {
     return true;
   }
 
-  private boolean isPlayerAccessoriesRootSetting(Milieu milieu) {
+  private boolean isPlayerAccessoriesRootMilieu(Milieu milieu) {
     if(!(milieu instanceof RootMilieuRegistry rootMilieuRegistry)) return false;
-    return rootMilieuRegistry.getNamespace().equals("player-accessories");
+    return rootMilieuRegistry.getNamespace().equals(AccessoriesAPI.ADDON_MAIN_NAMESPACE);
   }
 
   private boolean filterMilieus(String searchTerm, Milieu milieu) {
