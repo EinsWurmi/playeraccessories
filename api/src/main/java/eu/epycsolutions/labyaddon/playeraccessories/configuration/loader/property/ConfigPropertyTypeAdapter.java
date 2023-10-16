@@ -37,4 +37,5 @@ public class ConfigPropertyTypeAdapter implements JsonSerializer<ConfigProperty<
 
     return null;
   }
+
 }

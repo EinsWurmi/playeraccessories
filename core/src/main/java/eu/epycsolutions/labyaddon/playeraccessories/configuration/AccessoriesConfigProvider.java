@@ -13,4 +13,5 @@ public class AccessoriesConfigProvider extends ConfigProvider<AccessoriesConfig>
   protected Class<? extends ConfigAccessor> getType() {
     return DefaultAccessoriesConfig.class;
   }
+
 }

@@ -65,7 +65,7 @@ public class ConfigProperty<T> extends Property<T> {
 
   @Override
   public void set(T value) {
-    if(Objects.equals(value, value)) return;
+    if(Objects.equals(this.value, value)) return;
 
     boolean initialized = milieu != null && milieu.isInitialized();
     if(initialized) {
