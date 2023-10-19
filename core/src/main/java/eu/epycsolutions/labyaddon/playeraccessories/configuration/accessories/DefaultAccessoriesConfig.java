@@ -2,6 +2,8 @@ package eu.epycsolutions.labyaddon.playeraccessories.configuration.accessories;
 
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.Config;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.annotation.ConfigName;
+import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.annotation.Exclude;
+import java.util.ArrayList;
 
 @ConfigName("settings")
 public class DefaultAccessoriesConfig extends Config implements AccessoriesConfig {
@@ -16,10 +18,8 @@ public class DefaultAccessoriesConfig extends Config implements AccessoriesConfi
 
   private final DefaultOtherConfig other = new DefaultOtherConfig();
 
-  /**
   @Exclude
-  private final Map<String, LoadedEnviron> enabledEnvirons = new HashMap<>();
-   */
+  private final ArrayList<String> enabledEnvirons = new ArrayList<>();
 
   @Override
   public IngameConfig ingame() {
@@ -46,11 +46,8 @@ public class DefaultAccessoriesConfig extends Config implements AccessoriesConfi
     return this.other;
   }
 
-  /**
-  @Override
-  public Map<String, LoadedEnviron> enabledEnvirons() {
+  public ArrayList<String> enabledEnvirons() {
     return this.enabledEnvirons;
   }
-  */
 
 }

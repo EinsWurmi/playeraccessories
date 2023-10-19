@@ -1,8 +1,7 @@
 package eu.epycsolutions.labyaddon.playeraccessories.configuration.accessories;
 
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.ConfigAccessor;
-import eu.epycsolutions.labyaddon.playeraccessories.environ.LoadedEnviron;
-import java.util.Map;
+import java.util.ArrayList;
 
 public interface AccessoriesConfig extends ConfigAccessor {
 
@@ -16,6 +15,6 @@ public interface AccessoriesConfig extends ConfigAccessor {
 
   OtherConfig other();
 
-  // Map<String, LoadedEnviron> enabledEnvirons();
+  ArrayList<String> enabledEnvirons();
 
 }
