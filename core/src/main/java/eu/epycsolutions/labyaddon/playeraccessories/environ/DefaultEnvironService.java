@@ -1,5 +1,6 @@
 package eu.epycsolutions.labyaddon.playeraccessories.environ;
 
+import eu.epycsolutions.labyaddon.playeraccessories.AccessoriesAPI;
 import eu.epycsolutions.labyaddon.playeraccessories.configuration.loader.property.ConfigProperty;
 import eu.epycsolutions.labyaddon.playeraccessories.events.environ.lifecycle.EnvironEnableEvent;
 import eu.epycsolutions.labyaddon.playeraccessories.events.environs.EnvironStateChangeEvent;
@@ -97,7 +98,7 @@ public class DefaultEnvironService extends Service implements EnvironService {
 
   @Override
   public boolean isEnabled(String namespace) {
-    if(namespace.equals("player-accessories")) return true;
+    if(namespace.equals(AccessoriesAPI.ADDON_MAIN_NAMESPACE)) return true;
 
     Optional<LoadedEnviron> environ = getEnviron(namespace);
     if(!environ.isPresent()) return true;
