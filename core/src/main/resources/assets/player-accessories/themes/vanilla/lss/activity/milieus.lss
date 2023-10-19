@@ -11,7 +11,7 @@
         left: 0;
         top: 0;
 
-        margin: 9 1 1 1;
+        margin: 2 4 2 4;
 
         space-between-entries: 3;
 
@@ -94,9 +94,9 @@ Milieu {
     orientation: horizontal;
 
     &:not(:enabled) {
-        interactable: false;
+        intractable: false;
         pressable: false;
-        
+
         opacity: .4;
 
         Swap {
@@ -164,7 +164,7 @@ Milieu {
 
             margin-right: 3;
         }
-        
+
         .header-title {
             width: 100%;
 
@@ -204,9 +204,17 @@ Milieu {
                 padding: 0 5 0 5;
             }
 
+            Button {
+                background-color: 0;
+            }
+
             ColorPicker {
                 max-width: 50;
                 max-height: 18;
+            }
+
+            ItemStackPicker {
+                hover-box-delay: 0;
             }
 
             ActivityMilieu {
@@ -216,7 +224,7 @@ Milieu {
                 Icon {
                     height: 16;
                     width: 16;
-                    
+
                     alignment-y: center;
                 }
 
@@ -227,8 +235,17 @@ Milieu {
             }
         }
 
-        .advanced-button {
+        .advanced-button, .delete-button {
             width: 12;
+        }
+
+        .new-badge {
+            width: 16;
+            height: 16;
+
+            alignment-y: center;
+
+            margin-right: 3;
         }
     }
 
@@ -237,7 +254,7 @@ Milieu {
         height: fit-content;
     }
 
-    .extended-input-wiget {
+    .extended-input-widget {
         width: 100%;
 
         margin-top: -2;
@@ -251,7 +268,7 @@ Milieu {
         top: 0;
         right: 0;
         bottom: 0;
-        
+
         ignore-bound: true;
 
         alignment-x: left;
@@ -259,13 +276,6 @@ Milieu {
 
         background-color: rgba(0, 0, 0, 230);
         priority-layer: very_layer;
-
-        .text {
-            left: 5;
-            top: 50%;
-
-            alignment-y: center;
-        }
     }
 }
 
@@ -280,7 +290,7 @@ MilieuHeader {
 
         left: 0;
         top: 0;
-        
+
         background-color: rgba(0, 0, 0, 0);
     }
 

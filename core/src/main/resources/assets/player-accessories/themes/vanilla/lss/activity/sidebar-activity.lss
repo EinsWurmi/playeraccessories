@@ -1,3 +1,16 @@
+SidebarButton {
+    width: 100%;
+    height: 20;
+
+    * {
+        alignment-x: center;
+    }
+
+    &:active Component {
+        text-color: gray;
+    }
+}
+
 .container {
     width: 90%;
     max-width: 400;
@@ -23,7 +36,7 @@
             top: 0;
             right: 0;
 
-            border-radius: 15 0 0 15;
+            border-radius: 7 0 0 7;
 
             Scroll {
                 width: 100%;
@@ -35,6 +48,7 @@
                 scroll-speed: 20;
 
                 padding: 0;
+                padding-right: 5;
                 padding-top: 5;
                 padding-bottom: 5;
 
@@ -42,7 +56,7 @@
 
                 .sidebar {
                     height: fit-content;
-                    padding: 0 2 0 5;
+                    padding: 0 2 0 2;
 
                     Hr {
                         visible: false;
@@ -53,10 +67,7 @@
 
                         alignment-x: center;
 
-                        padding: 0 !important;
-                        padding: 0 4 0 4;
-
-                        margin: 4 2 4 2;
+                        margin: 0 2 0 2;
 
                         clear-button: true;
                     }
@@ -80,6 +91,17 @@
 
                             &:active Component {
                                 text-color: gray;
+                            }
+                        }
+
+                        SidebarButton {
+                            Icon {
+                                width: 8;
+                                height: 8;
+
+                                alignment: left;
+
+                                margin-left: 5;
                             }
                         }
                     }
