@@ -37,6 +37,8 @@ public class InstalledEnvironInfo {
 
   private int requiredLabyModBuild;
 
+  private boolean finder;
+
   public String getNamespace() {
     return this.namespace;
   }
@@ -138,6 +140,10 @@ public class InstalledEnvironInfo {
 
   public String[] getTransformers() {
     return this.transformers;
+  }
+
+  public boolean isFinderEnviron() {
+    return this.finder;
   }
 
   public boolean hasAddonDependencies() {
