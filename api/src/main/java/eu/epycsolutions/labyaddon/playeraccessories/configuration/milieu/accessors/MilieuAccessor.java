@@ -18,7 +18,7 @@ public interface MilieuAccessor {
 
   Config config();
 
-  <T> void set(T milieu);
+  <T> void set(T value);
 
   <T> T get();
 
